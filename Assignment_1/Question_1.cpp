@@ -117,7 +117,7 @@ void SRTF(vector<int> arrival)
     
     for(time=0; count!=n; time++)
     {
-        smallest=9;
+        smallest=n;
         for(i=0; i<n; i++)
         {
             if(a[i]<=time && b[i]<b[smallest] && b[i]>0 )
