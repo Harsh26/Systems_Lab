@@ -108,13 +108,14 @@ void PremptiveSJF(vector<int> arrivalTime)
     int a[n+1],burstTime[n+1],temp[n+1];
     int waitingTime[n+1],turnAroundTime[n+1],completionTime[n+1];
 	
-
+	vector<string>gantChart;
 	srand(time(0));
+	int ax[n+1] = {7,5,2,5,2,2,4,6,8,6};
 	// assigning random burst time for all process
     for(int i = 0; i < n; i++)
     {
-        burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
-    	
+        //burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
+    	burstTime[i] = ax[i];
     }
     
 	//copying burst time to temp array for future use
@@ -136,7 +137,10 @@ void PremptiveSJF(vector<int> arrivalTime)
         }
       
         burstTime[shortestJob] -= 1; // reduces burst time of process by 1 unit after each iteration of a particular process is executed
-
+		string id = to_string(shortestJob + 1);
+		string str = "P" + id;
+		gantChart.push_back(str);
+		
         if(burstTime[shortestJob] == 0) // if the process is exectued completely
         {
             endTime = currTime + 1;
@@ -148,7 +152,12 @@ void PremptiveSJF(vector<int> arrivalTime)
 		}
        
     }
-    
+    cout<<"\n\n";
+    for(auto ele: gantChart)
+    {
+    	cout<<"|"<<ele;
+	}
+	cout<<"\n\n";
     PrintOutput(arrivalTime,burstTime,turnAroundTime,waitingTime,completionTime,temp);
 
 }
