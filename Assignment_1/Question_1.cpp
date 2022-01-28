@@ -2,10 +2,11 @@
 #include<iostream>
 #include<vector>
 #include<fstream>
-#include <ctime>
+#include<ctime>
+
 using namespace std;
 
-vector<int> extractIntegersFromLine(string str)
+vector<int> extractIntegersFromLine(string str) // Utility function for reading Arrival time from file and converting string to int
 {
     vector<int> v;
 
@@ -31,10 +32,10 @@ vector<int> extractIntegersFromLine(string str)
 
     }
 
-    return v;
+    return v; 
 }
 
-vector<vector<int>> getArrivalTime()
+vector<vector<int>> getArrivalTime() // Returns File content of Arrival time in vector of vectors format
 {
     vector<vector<int>> v;
 
@@ -49,7 +50,6 @@ vector<vector<int>> getArrivalTime()
         cerr << "Could not find the ARRIVAL file" << endl;
         exit(0);
     }
-
 
     while (true) 
     {
@@ -68,7 +68,7 @@ vector<vector<int>> getArrivalTime()
     return v;
 }
 
-void print2DVector(vector<vector<int>> v)
+void print2DVector(vector<vector<int>> v) // Utility function For checking if File Read properly or not
 {
     for (int i = 0; i < v.size(); i++)
     {
@@ -79,8 +79,12 @@ void print2DVector(vector<vector<int>> v)
         cout<<"\n";
     }
 }
+
 void PrintOutput(vector<int> arrivalTime,int burstTime[],int turnAroundTime[],int waitingTime[],int completionTime[],int temp[])
 {
+    // This function Prints Turn Around, Completion and Waiting time in tabular format
+
+
 	double avgWaitTime = 0, avgTAT = 0; 
 	cout<<endl;
 	cout<<"Process ID  "<< "Burst Time  "<<"Arrival Time  " ;
@@ -96,26 +100,29 @@ void PrintOutput(vector<int> arrivalTime,int burstTime[],int turnAroundTime[],in
     cout<<"\n\nAverage waiting time = "<<avgWaitTime / n;
     cout<<"\nAverage Turnaround time = "<<avgTAT / n<<endl;
 }
-void PremptiveSJF(vector<int> arrivalTime)
+
+void PremptiveSJF(vector<int> arrivalTime,int tcnum)
 {
 
     int shortestJob = 0;
+
+    cout<<"Test Case Number: "<<tcnum;
    
-    cout<<"\nThe total number of Processes: ";  //input
+    cout<<"\n\nThe total number of Processes: ";  //input
     int n = arrivalTime.size();
-    cout<<n;
+    cout<<n<<"\n";
 
     int a[n+1],burstTime[n+1],temp[n+1];
     int waitingTime[n+1],turnAroundTime[n+1],completionTime[n+1];
 	
 	vector<string>gantChart;
-	srand(time(0));
-	int ax[n+1] = {7,5,2,5,2,2,4,6,8,6};
+	
+
 	// assigning random burst time for all process
     for(int i = 0; i < n; i++)
     {
-        //burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
-    	burstTime[i] = ax[i];
+        burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
+    	//burstTime[i] = ax[i];
     }
     
 	//copying burst time to temp array for future use
@@ -129,51 +136,88 @@ void PremptiveSJF(vector<int> arrivalTime)
     {
         shortestJob = n;
        
-        //findng the shortest job by comparing it with all other burst time and min arrival time
+        // Findng the shortest job by comparing with all other burst time and min arrival time
         for(int i = 0; i < n; i++)
         {
             if(arrivalTime[i] <= currTime && burstTime[i] < burstTime[shortestJob] && burstTime[i] > 0 )
                 shortestJob = i;
         }
       
-        burstTime[shortestJob] -= 1; // reduces burst time of process by 1 unit after each iteration of a particular process is executed
-		string id = to_string(shortestJob + 1);
+        burstTime[shortestJob] -= 1; // Reduces burst time of process by 1 unit after each iteration of a particular process is executed in a time Stamp
+		
+        string id = to_string(shortestJob + 1);
 		string str = "P" + id;
 		gantChart.push_back(str);
 		
-        if(burstTime[shortestJob] == 0) // if the process is exectued completely
+        if(burstTime[shortestJob] == 0) // If the process is exectued completely then write Completion,Turn Around and Waiting time
         {
             endTime = currTime + 1;
             completionTime[shortestJob] = endTime;
             turnAroundTime[shortestJob] = endTime - arrivalTime[shortestJob];
             waitingTime[shortestJob] = turnAroundTime[shortestJob] - temp[shortestJob];
 			noOfProcessCompleted++; // incrementing noOfProcessCompleted to keep track of number of process completed its execution
-        	
 		}
        
     }
+    
+    PrintOutput(arrivalTime,burstTime,turnAroundTime,waitingTime,completionTime,temp);
+
     cout<<"\n\n";
+
+    // Printing Gantt Chart
+
+    cout<<"*** GANTT CHART of Above Table ***\n\n";
     for(auto ele: gantChart)
     {
     	cout<<"|"<<ele;
 	}
 	cout<<"\n\n";
-    PrintOutput(arrivalTime,burstTime,turnAroundTime,waitingTime,completionTime,temp);
+
+    int count=0;
+
+    string element="-";
+    
+    for(auto ele: gantChart)
+    {
+        if(element == ele)
+        {
+            count++;
+            continue;
+        }
+        
+        else
+    	{
+            if(element!="-")
+            cout<<count<<"\n";
+
+            element=ele;
+            cout<<ele<<" executed from "<<count++<<" to ";
+        }
+	}
+
+    cout<<count;
+	cout<<"\n\n";
 
 }
 
 int main()
 {
-    vector<vector<int>> arrival_time;
+    srand(time(0)); // Gives the random function a new seed
+
+    vector<vector<int>> arrival_time; // Content to be fixed by File itself
 
     arrival_time=getArrivalTime();
 
-    print2DVector(arrival_time);
+    //print2DVector(arrival_time);
+
+    cout<<"\n\n\n********* OUTPUT *********\n\n\n";
+    cout<<"\n\n--------------------------------------------------------------------------------------------------------------------------\n\n";
 
     for(int i=0;i<arrival_time.size()-1;i++)
     {
-    	PremptiveSJF(arrival_time[i]);
-		cout<<"\n\n";
+    	PremptiveSJF(arrival_time[i],i);
+        cout<<"\n\n--------------------------------------------------------------------------------------------------------------------------\n\n";
     }
+
     return 0;
 }
