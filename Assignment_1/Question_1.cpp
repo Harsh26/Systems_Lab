@@ -1,7 +1,8 @@
-// Write Code Here for Solution to Question 1... From Harsh's VS Studio Code 
 
-#include<bits/stdc++.h>
-
+#include<iostream>
+#include<vector>
+#include<fstream>
+#include <ctime>
 using namespace std;
 
 vector<int> extractIntegersFromLine(string str)
@@ -78,71 +79,77 @@ void print2DVector(vector<vector<int>> v)
         cout<<"\n";
     }
 }
-
-void SRTF(vector<int> arrival)
+void PrintOutput(vector<int> arrivalTime,int burstTime[],int turnAroundTime[],int waitingTime[],int completionTime[],int temp[])
+{
+	double avgWaitTime = 0, avgTAT = 0; 
+	cout<<endl;
+	cout<<"Process ID  "<< "Burst Time  "<<"Arrival Time  " ;
+	cout<<"Waiting Time  "<<"Turnaround Time  "<<"Completion Time  "<<endl;
+	int n = arrivalTime.size();
+    for(int i=0; i<n; i++)
+    {
+        cout<<"P"<<i+1<<"\t\t"<<temp[i]<<"\t\t"<<arrivalTime[i]<<"\t\t";
+		cout<<waitingTime[i]<<"\t\t"<<turnAroundTime[i]<<"\t\t"<<completionTime[i]<<endl;
+        avgWaitTime = avgWaitTime + waitingTime[i];
+        avgTAT = avgTAT + turnAroundTime[i];
+    }
+    cout<<"\n\nAverage waiting time = "<<avgWaitTime / n;
+    cout<<"\nAverage Turnaround time = "<<avgTAT / n<<endl;
+}
+void PremptiveSJF(vector<int> arrivalTime)
 {
 
-    int i,j,smallest,count=0,time,n;
-    double avg=0,tt=0,end;
-
-    cout<<"\nThe number of Processes: ";  //input
-    n=arrival.size();
+    int shortestJob = 0;
+   
+    cout<<"\nThe total number of Processes: ";  //input
+    int n = arrivalTime.size();
     cout<<n;
 
-    int a[n+1],b[n+1],x[n+1];
-    int waiting[n+1],turnaround[n+1],completion[n+1];
+    int a[n+1],burstTime[n+1],temp[n+1];
+    int waitingTime[n+1],turnAroundTime[n+1],completionTime[n+1];
+	
 
-    for(i=0; i<n; i++)
+	srand(time(0));
+	// assigning random burst time for all process
+    for(int i = 0; i < n; i++)
     {
-        a[i]=arrival[i];
+        burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
+    	
     }
-
-    for(i=0; i<n; i++)
-    {
-        b[i]=rand()%8+1;
-    }
-
-    for(i=0; i<n; i++)
-        x[i]=b[i];
-
-    b[n]=9999;
-
-    /*cout<<"\nhere\n";
-
-    for(int i=0;i<n;i++)
-    {
-        cout<<a[i]<<"\t"<<b[i]<<"\t"<<x[i];
-        cout<<"\n";
-    }*/
     
-    for(time=0; count!=n; time++)
-    {
-        smallest=n;
-        for(i=0; i<n; i++)
-        {
-            if(a[i]<=time && b[i]<b[smallest] && b[i]>0 )
-                smallest=i;
-        }
-        b[smallest]--;
+	//copying burst time to temp array for future use
+    for(int i = 0; i < n; i++)
+        temp[i] = burstTime[i];
 
-        if(b[smallest]==0)
-        {
-            count++;
-            end=time+1;
-            completion[smallest] = end;
-            waiting[smallest] = end - a[smallest] - x[smallest];
-            turnaround[smallest] = end - a[smallest];
-        }
-    }
-    cout<<"Process"<<"\t"<< "burst-time"<<"\t"<<"arrival-time" <<"\t"<<"waiting-time" <<"\t"<<"turnaround-time"<< "\t"<<"completion-time"<<endl;
-    for(i=0; i<n; i++)
+    burstTime[n] = 9;//to compare burst time of all processs to find minimum burst time
+	int noOfProcessCompleted = 0, endTime = 0;
+
+    for(int currTime = 0; noOfProcessCompleted != n; currTime++)
     {
-        cout<<"p"<<i+1<<"\t\t"<<x[i]<<"\t\t"<<a[i]<<"\t\t"<<waiting[i]<<"\t\t"<<turnaround[i]<<"\t\t"<<completion[i]<<endl;
-        avg = avg + waiting[i];
-        tt = tt + turnaround[i];
+        shortestJob = n;
+       
+        //findng the shortest job by comparing it with all other burst time and min arrival time
+        for(int i = 0; i < n; i++)
+        {
+            if(arrivalTime[i] <= currTime && burstTime[i] < burstTime[shortestJob] && burstTime[i] > 0 )
+                shortestJob = i;
+        }
+      
+        burstTime[shortestJob] -= 1; // reduces burst time of process by 1 unit after each iteration of a particular process is executed
+
+        if(burstTime[shortestJob] == 0) // if the process is exectued completely
+        {
+            endTime = currTime + 1;
+            completionTime[shortestJob] = endTime;
+            turnAroundTime[shortestJob] = endTime - arrivalTime[shortestJob];
+            waitingTime[shortestJob] = turnAroundTime[shortestJob] - temp[shortestJob];
+			noOfProcessCompleted++; // incrementing noOfProcessCompleted to keep track of number of process completed its execution
+        	
+		}
+       
     }
-    cout<<"\n\nAverage waiting time ="<<avg/n;
-    cout<<"  Average Turnaround time ="<<tt/n<<endl;
+    
+    PrintOutput(arrivalTime,burstTime,turnAroundTime,waitingTime,completionTime,temp);
 
 }
 
@@ -155,7 +162,9 @@ int main()
     print2DVector(arrival_time);
 
     for(int i=0;i<arrival_time.size()-1;i++)
-    SRTF(arrival_time[i]), cout<<"\n\n";
-
+    {
+    	PremptiveSJF(arrival_time[i]);
+		cout<<"\n\n";
+    }
     return 0;
 }
