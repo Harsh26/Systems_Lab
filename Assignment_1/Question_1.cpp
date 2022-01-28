@@ -11,7 +11,7 @@ vector<vector<int>> getArrivalTime()
     vector<vector<int>> v;
 
     ifstream inFile;
-    inFile.open("arrival.txt");
+    inFile.open("arrival.txt"); // File present in same folder
 
     if (inFile.fail()) 
     {
