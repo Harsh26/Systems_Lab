@@ -79,6 +79,73 @@ void print2DVector(vector<vector<int>> v)
     }
 }
 
+void SRTF(vector<int> arrival)
+{
+
+    int i,j,smallest,count=0,time,n;
+    double avg=0,tt=0,end;
+
+    cout<<"\nThe number of Processes: ";  //input
+    n=arrival.size();
+    cout<<n;
+
+    int a[n+1],b[n+1],x[n+1];
+    int waiting[n+1],turnaround[n+1],completion[n+1];
+
+    for(i=0; i<n; i++)
+    {
+        a[i]=arrival[i];
+    }
+
+    for(i=0; i<n; i++)
+    {
+        b[i]=rand()%8+1;
+    }
+
+    for(i=0; i<n; i++)
+        x[i]=b[i];
+
+    b[n]=9999;
+
+    /*cout<<"\nhere\n";
+
+    for(int i=0;i<n;i++)
+    {
+        cout<<a[i]<<"\t"<<b[i]<<"\t"<<x[i];
+        cout<<"\n";
+    }*/
+    
+    for(time=0; count!=n; time++)
+    {
+        smallest=9;
+        for(i=0; i<n; i++)
+        {
+            if(a[i]<=time && b[i]<b[smallest] && b[i]>0 )
+                smallest=i;
+        }
+        b[smallest]--;
+
+        if(b[smallest]==0)
+        {
+            count++;
+            end=time+1;
+            completion[smallest] = end;
+            waiting[smallest] = end - a[smallest] - x[smallest];
+            turnaround[smallest] = end - a[smallest];
+        }
+    }
+    cout<<"Process"<<"\t"<< "burst-time"<<"\t"<<"arrival-time" <<"\t"<<"waiting-time" <<"\t"<<"turnaround-time"<< "\t"<<"completion-time"<<endl;
+    for(i=0; i<n; i++)
+    {
+        cout<<"p"<<i+1<<"\t\t"<<x[i]<<"\t\t"<<a[i]<<"\t\t"<<waiting[i]<<"\t\t"<<turnaround[i]<<"\t\t"<<completion[i]<<endl;
+        avg = avg + waiting[i];
+        tt = tt + turnaround[i];
+    }
+    cout<<"\n\nAverage waiting time ="<<avg/n;
+    cout<<"  Average Turnaround time ="<<tt/n<<endl;
+
+}
+
 int main()
 {
     vector<vector<int>> arrival_time;
@@ -86,6 +153,9 @@ int main()
     arrival_time=getArrivalTime();
 
     print2DVector(arrival_time);
+
+    for(int i=0;i<arrival_time.size()-1;i++)
+    SRTF(arrival_time[i]), cout<<"\n\n";
 
     return 0;
 }
