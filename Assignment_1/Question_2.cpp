@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <queue>
 
 using namespace std;
 
@@ -63,12 +64,32 @@ int main()
 
     }
 
+    //Uncomment below line to see Coupon Numbers Assigned by you
+    /*
     cout<<"\n\nFollowing are Coupon Numbers :\n";
 
     for(int person=0;person<n;person++)
     {
         cout<<"Coupon Number of person "<<person+1<<" = "<<couponNumbers[person]<<"\n";
     }
+    */
 
-    return 0;
+   priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+
+   for(int i=0;i<n;i++)
+   {
+       pq.push({couponNumbers[i],i});
+   }
+
+   //Uncomment below line to see output of Priority queue
+   /*cout<<"\n\nFollowing are sorted Coupon Numbers :\n";
+   while(!pq.empty())
+   {
+       cout<<pq.top().first<<" assigned to person "<<pq.top().second+1<<"\n";
+       pq.pop();
+   }
+   */
+
+  
+   return 0;
 }
