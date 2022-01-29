@@ -43,7 +43,7 @@ vector<vector<int>> getArrivalTime() // Returns File content of Arrival time in 
 
     ifstream inFile;
 
-    inFile.open("myarrival.txt"); // File present in same folder
+    inFile.open("arrival.txt"); // File present in same folder
 
     if (inFile.fail()) // File NOT Found
     {
@@ -59,10 +59,15 @@ vector<vector<int>> getArrivalTime() // Returns File content of Arrival time in 
         vector<int> f; 
 
         getline(inFile,line);
+        
+        //cout<<line.length()<<"\n";
 
         f=extractIntegersFromLine(line);
 
         v.push_back(f);
+
+        if(line.length()==0)
+        break;
     }
 
     return v;
@@ -117,13 +122,13 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
 	
 	vector<string>gantChart;
 	
+    // int bx[]={1,1,1};
 
 	// assigning random burst time for all process
-    int bx[]={1,1,1};
     for(int i = 0; i < n; i++)
     {
-        //burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
-    	burstTime[i] = bx[i];
+        burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
+    	//burstTime[i] = bx[i];
     }
     
 	//copying burst time to temp array for future use
@@ -154,7 +159,7 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
 
         else
         {
-            gantChart.push_back("NULL");
+            gantChart.push_back("NULL"); // IDLE time of CPU for this timepoint
         }
 		
         if(burstTime[shortestJob] == 0) // If the process is exectued completely then write Completion,Turn Around and Waiting time
@@ -177,12 +182,13 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
     cout<<"*** GANTT CHART of Above Table ***\n\n";
     for(auto ele: gantChart)
     {
-        if(ele == "NULL")
-        cout<<"| ";
+        if(ele == "NULL")// IF IDLE time print Nothing
+        cout<<" | ";
 
         else
-    	cout<<"|"<<ele;
+    	cout<<" | "<<ele;
 	}
+
 	cout<<"\n\n";
 
     int count=0;
