@@ -119,7 +119,7 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
 	
 
 	// assigning random burst time for all process
-    int bx[]={2,3,3};
+    int bx[]={1,1,1};
     for(int i = 0; i < n; i++)
     {
         //burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
@@ -193,10 +193,13 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
     {
         if(ele == "NULL")
         {
+            if(count != 0)
             cout<<count<<"\n";
+
             cout<<"No process Executed from "<<count++<<" to ";
+            element=ele;
         }
-        
+
         else if(element == ele)
         {
             count++;
