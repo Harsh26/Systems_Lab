@@ -43,7 +43,7 @@ vector<vector<int>> getArrivalTime() // Returns File content of Arrival time in 
 
     ifstream inFile;
 
-    inFile.open("arrival.txt"); // File present in same folder
+    inFile.open("myarrival.txt"); // File present in same folder
 
     if (inFile.fail()) // File NOT Found
     {
@@ -92,7 +92,7 @@ void PrintOutput(vector<int> arrivalTime,int burstTime[],int turnAroundTime[],in
 	int n = arrivalTime.size();
     for(int i=0; i<n; i++)
     {
-        cout<<"P"<<i+1<<"\t\t"<<temp[i]<<"\t\t"<<arrivalTime[i]<<"\t\t";
+        cout<<"P"<<i<<"\t\t"<<temp[i]<<"\t\t"<<arrivalTime[i]<<"\t\t";
 		cout<<waitingTime[i]<<"\t\t"<<turnAroundTime[i]<<"\t\t"<<completionTime[i]<<endl;
         avgWaitTime = avgWaitTime + waitingTime[i];
         avgTAT = avgTAT + turnAroundTime[i];
@@ -106,7 +106,7 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
 
     int shortestJob = 0;
 
-    cout<<"Test Case Number: "<<tcnum;
+    cout<<"Test Case Number: "<<tcnum+1;
    
     cout<<"\n\nThe total number of Processes: ";  //input
     int n = arrivalTime.size();
@@ -119,10 +119,11 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
 	
 
 	// assigning random burst time for all process
+    int bx[]={2,3,3};
     for(int i = 0; i < n; i++)
     {
-        burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
-    	//burstTime[i] = ax[i];
+        //burstTime[i] = (rand() % 8) + 1; //burst time ranges from 1 to 8.
+    	burstTime[i] = bx[i];
     }
     
 	//copying burst time to temp array for future use
@@ -142,12 +143,19 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
             if(arrivalTime[i] <= currTime && burstTime[i] < burstTime[shortestJob] && burstTime[i] > 0 )
                 shortestJob = i;
         }
-      
-        burstTime[shortestJob] -= 1; // Reduces burst time of process by 1 unit after each iteration of a particular process is executed in a time Stamp
+        if(burstTime[shortestJob] != 9)
+        {
+            burstTime[shortestJob] -= 1; // Reduces burst time of process by 1 unit after each iteration of a particular process is executed in a time Stamp
 		
-        string id = to_string(shortestJob + 1);
-		string str = "P" + id;
-		gantChart.push_back(str);
+            string id = to_string(shortestJob);
+		    string str = "P" + id;
+		    gantChart.push_back(str);
+        }
+
+        else
+        {
+            gantChart.push_back("NULL");
+        }
 		
         if(burstTime[shortestJob] == 0) // If the process is exectued completely then write Completion,Turn Around and Waiting time
         {
@@ -169,6 +177,10 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
     cout<<"*** GANTT CHART of Above Table ***\n\n";
     for(auto ele: gantChart)
     {
+        if(ele == "NULL")
+        cout<<"| ";
+
+        else
     	cout<<"|"<<ele;
 	}
 	cout<<"\n\n";
@@ -179,13 +191,19 @@ void PremptiveSJF(vector<int> arrivalTime,int tcnum)
     
     for(auto ele: gantChart)
     {
-        if(element == ele)
+        if(ele == "NULL")
+        {
+            cout<<count<<"\n";
+            cout<<"No process Executed from "<<count++<<" to ";
+        }
+        
+        else if(element == ele)
         {
             count++;
             continue;
         }
         
-        else
+        else 
     	{
             if(element!="-")
             cout<<count<<"\n";
