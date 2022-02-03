@@ -1,6 +1,4 @@
-
-// Disclaimer: https://stackoverflow.com/questions/12286628/which-thread-will-be-the-first-to-enter-the-critical-section
-
+#include<stdio.h>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -145,7 +143,7 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
 
 }
 
-int main()
+int main(int argc, char** argv)
 {
     int n;
 
@@ -194,7 +192,6 @@ int main()
     //Uncomment below line to see Coupon Numbers Assigned by you
     /*
     cout<<"\n\nFollowing are Coupon Numbers :\n";
-
     for(int person=0;person<n;person++)
     {
         cout<<"Coupon Number of person "<<person+1<<" = "<<couponNumbers[person]<<"\n";
