@@ -3,7 +3,12 @@
 #include <vector>
 #include <pthread.h>
 #include <unistd.h>
+#include <semaphore.h>
+#include <cstdint>
+#include <stdio.h>
 #include <time.h>
+#include <sched.h>
+
 using namespace std;
 
 pthread_mutex_t mutex;
@@ -19,7 +24,7 @@ vector<int> seq;
 void readInput()
 {
 	ifstream infile;
-    infile.open("myip.txt");
+    infile.open("myip4.txt");
     
     if (infile.fail()) // File NOT Found
     {
@@ -72,17 +77,17 @@ void readInput()
 }
 void *procs(void* processID)
 {     
-	int pID;
-    
-    vector<int>request;
+	int pID= ((intptr_t)processID); 
 	pthread_mutex_lock(&mutex);
 	
-	for(pID = *(int*)processID;pID != seq[processDone];)
+	while(pID != seq[processDone])
 	{
+		pthread_mutex_unlock(&mutex);
  	    pthread_cond_wait(&cond, &mutex);
  	}
+	
 
-	cout<<"\n-->Process"<<pID+1;
+	cout<<"\n--> Process: "<<pID+1;
     cout<<"\n\tAllocated :  ";
     for(int i=0; i<m; i++)
         cout<< allocatedRes[pID][i]<<"  ";
@@ -115,7 +120,7 @@ void *procs(void* processID)
     pthread_cond_broadcast(&cond);
     pthread_mutex_unlock(&mutex);
 	pthread_exit(NULL);
-    
+    return NULL;
 }
 int checkSafe()
 {
@@ -168,22 +173,27 @@ int main()
 	{
 		cout<<seq[i] + 1<<"  ";
 	}
-	cout<<endl;
 
     pthread_attr_t attrDefault;
     pthread_attr_init(&attrDefault);
     pthread_t tid[n];
 	int pid[n];
-            
+    
     for(int i = 0; i < n; i++)
     {
 	    pid[i] = i;
-        pthread_create((tid+i), &attrDefault, procs, (pid+i));
-    
 	}
+
+	cout<<"\n";
+
 	for(int i = 0; i < n; i++)
     {
-	    pthread_join(*(tid+i),NULL);
+        pthread_create(&tid[i], NULL, procs, (void *) (intptr_t) pid[i]);
+	}
+	
+	for(int i = 0; i < n; i++)
+    {
+	    pthread_join(tid[i],NULL);
 	}
 	printf("\nAll Processes Finished\n");
     return 0;
