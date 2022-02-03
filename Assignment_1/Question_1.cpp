@@ -43,11 +43,21 @@ vector<vector<int>> getArrivalTime() // Returns File content of Arrival time in 
 
     ifstream inFile;
 
-    inFile.open("arrival.txt"); // File present in same folder
+    string filename;
+
+    cout<<"\n*****************************************************\n";
+
+    cout<<"\n\nEnter name of the arrival file with .txt extension: ";
+    cin>>filename;
+
+    cout<<"\n\n";
+
+    inFile.open(filename); // File present in same folder
 
     if (inFile.fail()) // File NOT Found
     {
-        cerr << "Could not find the ARRIVAL file" << endl;
+        cerr << "Could not find the "<<filename<<".txt file\n" << endl;
+        cerr << "HINT: You may have missed \" .txt \" extension while writing.\n\n";
         exit(0);
     }
 
