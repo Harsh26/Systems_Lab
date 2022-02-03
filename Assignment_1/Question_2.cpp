@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include <cstdint>
+#include <stdio.h>
 
 using namespace std;
 
