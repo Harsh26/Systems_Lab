@@ -74,7 +74,6 @@ void *procs(void* processID)
 {     
 	int pID;
     
-    vector<int>request;
 	pthread_mutex_lock(&mutex);
 	
 	for(pID = *(int*)processID;pID != seq[processDone];)
