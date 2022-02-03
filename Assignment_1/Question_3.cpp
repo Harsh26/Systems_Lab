@@ -24,11 +24,20 @@ vector<int> seq;
 void readInput()
 {
 	ifstream infile;
-    infile.open("myip4.txt");
-    
+
+	string filename;
+
+	cout<<"\n\nEnter name of the arrival file with .txt extension: ";
+    cin>>filename;
+
+    cout<<"\n\n";
+
+    infile.open(filename); // File present in same folder
+
     if (infile.fail()) // File NOT Found
     {
-        cerr << "Could not find the input file" << endl;
+        cerr << "Could not find the "<<filename<<".txt file\n" << endl;
+        cerr << "HINT: You may have missed \" .txt \" extension while writing.\n\n";
         exit(0);
     }
     
