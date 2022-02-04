@@ -25,6 +25,8 @@ int rcount = 0; // Counting Semaphore for Reader Count
 
 int track; // Counting Sempahore for Keeping track of who is currently performing reading or writing
 
+int numOfFriends; // No. of friends who can read/write
+
 int string_to_int(string str) // Convert the string to integer
 {
     // object from the class stringstream
@@ -38,9 +40,9 @@ int string_to_int(string str) // Convert the string to integer
 
 void* write_to_card(void *arg) // Card Write [Critical Section] 
 {
-    int num=((intptr_t) arg); // Extracting thread number from argument
-
     sem_wait(&writeblock); // write block Sempahore is binary Semaphore which controls who writes.
+
+    int num=((intptr_t) arg); // Extracting thread number from argument
 
     track=num+1; // Tracking f+1 person who is inside the critical section for writing
 
@@ -63,25 +65,23 @@ void* write_to_card(void *arg) // Card Write [Critical Section]
 
 void* read_from_card(void *arg)
 {
-    
-    int num= ((intptr_t)arg); // Extracting Thread number from arguments
-
     sem_wait(&mutex);
+
+    int num= ((intptr_t)arg); // Extracting Thread number from arguments
 
     rcount++;
 
     if(rcount==1)
     sem_wait(&writeblock);
 
-    sem_post(&mutex);
-
     track=num+1; // Tracking f+1 person who is inside the critical section for reading
-
     printf("\nPerson %d is reading...",track);
 
-    printf("(%d Readers are inside the Critical Section.....)\n",rcount); // Using printf because cout is thread unsafe function
+    sem_post(&mutex);
+    
+    printf("(%d Readers are inside the Critical Section.....)\n",numOfFriends - rcount); // Using printf because cout is thread unsafe function
 
-    usleep(rand()%3+1); // Sleep for random amount of time
+    sleep(3); // Sleep for random amount of time
 
     sem_wait(&mutex);
 
@@ -154,6 +154,8 @@ int main()
     cin>>n;
 
     vector<int> couponNumbers(n);
+
+    numOfFriends=n;
 
     cout<<"\n\n";
 
