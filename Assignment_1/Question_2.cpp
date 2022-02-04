@@ -25,6 +25,8 @@ int track; // Counting Sempahore for Keeping track of who is currently performin
 
 int numOfFriends; // No. of friends who can read/write
 
+sem_t readingExclusion;
+
 int string_to_int(string str) // Convert the string to integer
 {
     // object from the class stringstream
@@ -73,12 +75,17 @@ void* read_from_card(void *arg)
     sem_wait(&writeblock);
 
     track=num+1; // Tracking f+1 person who is inside the critical section for reading
+
+    sem_wait(&readingExclusion);
     printf("\nPerson %d is reading...",track);
+    sem_post(&readingExclusion);
 
     sem_post(&mutex);
     
+    sem_wait(&readingExclusion);
     printf("(%d Readers are inside the Critical Section.....)\n",numOfFriends - rcount); // Using printf because cout is thread unsafe function
-
+    sem_post(&readingExclusion);
+    
     sleep(3); // Sleep for random amount of time
 
     sem_wait(&mutex);
