@@ -1,6 +1,4 @@
 
-// Disclaimer: https://stackoverflow.com/questions/12286628/which-thread-will-be-the-first-to-enter-the-critical-section
-
 #include <iostream>
 #include <sstream>
 #include <vector>
