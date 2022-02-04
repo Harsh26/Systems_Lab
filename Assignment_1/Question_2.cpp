@@ -58,7 +58,7 @@ void* write_to_card(void *arg) // Card Write [Critical Section]
 
     sem_post(&writeblock); 
 
-    track=-1; // Release the Semaphore
+    track=-1; 
 
     return NULL;
 }
