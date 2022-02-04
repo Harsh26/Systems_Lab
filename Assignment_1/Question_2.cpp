@@ -220,5 +220,6 @@ int main()
 
    reader_writer(pq,n);
 
+   cout<<"\n\n\n"; 
    return 0;
 }
