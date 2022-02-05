@@ -153,6 +153,7 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
 
 int main()
 {
+    srand(0);
     int n;
 
     cout<<"\n\n\nEnter Number of Friends: ";
