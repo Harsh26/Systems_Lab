@@ -48,17 +48,19 @@ void* write_to_card(void *arg) // Card Write [Critical Section]
 
     data_val++; // Value wrote to the card
 
-    cout<<"\nPerson "<<track<<" is writing to the card.....";
+    cout<<"\nPerson "<<num+1<<" is writing to the card.....";
 
     cout<<"(Only 1 writer inside Critical Section....)\n";
 
     sleep(rand()%2+1); // Sleep for a random time
 
-    cout<<"Person "<<track<<" Done with writing, so Exiting Critical Section.....\n";
+    cout<<"Person "<<num+1<<" Done with writing, so Exiting Critical Section.....\n";
 
     sem_post(&writeblock); 
 
     track=-1; 
+
+    pthread_exit(NULL);
 
     return NULL;
 }
@@ -77,16 +79,18 @@ void* read_from_card(void *arg)
     track=num+1; // Tracking f+1 person who is inside the critical section for reading
 
     sem_wait(&readingExclusion);
-    printf("\nPerson %d is reading...",track);
+    //printf("\nPerson %d is reading...",track);
+    cout<<"\nPerson "<<num+1<<" is reading...";
     sem_post(&readingExclusion);
 
     sem_post(&mutex);
     
     sem_wait(&readingExclusion);
-    printf("(%d Readers are inside the Critical Section.....)\n",numOfFriends - rcount); // Using printf because cout is thread unsafe function
+    cout<<"("<<numOfFriends-rcount<<" Readers are inside the Critical Section...)\n";
+    //printf("(%d Readers are inside the Critical Section.....)\n",numOfFriends - rcount); // Using printf because cout is thread unsafe function
     sem_post(&readingExclusion);
     
-    sleep(3); // Sleep for random amount of time
+    sleep(2); // Sleep for random amount of time
 
     sem_wait(&mutex);
 
@@ -102,6 +106,8 @@ void* read_from_card(void *arg)
 
     track=-1;
 
+    pthread_exit(NULL);
+
     return NULL;
 }
 
@@ -112,7 +118,7 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
 
     sem_init(&mutex,0,1);          // Setting Initial Values of 
     sem_init(&writeblock,0,1);     //    Binary Semaphore
-              
+    sem_init(&readingExclusion,0,1);            
 
     int my_priority=1000; // Variable to Assign highest priority
 
@@ -146,6 +152,11 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
     for(int i=0;i<n;i++)
     {
         pthread_join(friends_writer[i],NULL);
+        //pthread_join(friends_reader[i],NULL);
+    }
+    for(int i=0;i<n;i++)
+    {
+        //pthread_join(friends_writer[i],NULL);
         pthread_join(friends_reader[i],NULL);
     }
 
