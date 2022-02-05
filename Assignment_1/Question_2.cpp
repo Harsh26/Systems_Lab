@@ -151,6 +151,11 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
 
 }
 
+void generateRandomCode(vector<int> &couponNumbers,int n)
+{
+	
+}
+
 int main()
 {
     srand(0);
@@ -164,12 +169,37 @@ int main()
     numOfFriends=n;
 
     cout<<"\n\n";
-
-    for(int person=0;person<n;person++)
+	
+	int menu;
+	cout<<"\nMENU";
+	cout<<"\nChoose 1 for random generation of coupon code ";
+	cout<<"\nChoose 2 for manual input of coupon code ";
+	cout<<"\nEnter the option(1/2) : ";
+	cin>>menu;
+	switch(menu)
+	{
+	case 1: //generateRandomCode(couponNumbers,n); 
+			
+			for(int i = 0; i < n; i++)
+			{
+	
+				int x = (100 + rand()) % 1000;
+				cout<<x<<" ";
+				 vector<int> :: iterator itr;
+				itr = std::find (couponNumbers.begin(), couponNumbers.end(), x);
+				if(itr == couponNumbers.end())
+					couponNumbers[i] = x;
+				else
+					i--;
+			}
+			break;
+	
+	case 2:
+    for(int person = 0; person < n; person++)
     {
         string cno;
         vector<int> :: iterator itr;
-
+		
         cout<<"Enter 3 Digit Coupon Number for person "<<person+1<<" : ";
         cin>>cno;
 
@@ -199,16 +229,18 @@ int main()
         }
 
     }
+    break;
+}
+
 
     //Uncomment below line to see Coupon Numbers Assigned by you
-    /*
+    
     cout<<"\n\nFollowing are Coupon Numbers :\n";
-
     for(int person=0;person<n;person++)
     {
         cout<<"Coupon Number of person "<<person+1<<" = "<<couponNumbers[person]<<"\n";
     }
-    */
+    
 
    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
 
