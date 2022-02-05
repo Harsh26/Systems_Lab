@@ -29,7 +29,7 @@ void readInput()
 
 	string filename;
 
-	cout<<"\n\nEnter name of the arrival file with .txt extension: ";
+	cout<<"\n\nEnter name of the file with .txt extension: ";
     cin>>filename;
 
     cout<<"\n\n";
