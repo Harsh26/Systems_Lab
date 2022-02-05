@@ -25,14 +25,6 @@ int track;
 
 int numOfFriends; // No. of friends who can read/write
 
-pthread_mutex_t mutex1; // Semaphore for ordering of writer
-pthread_mutex_t mutex2; // Semaphore for ordering of reader
-pthread_cond_t cond;
-
-vector<int> order;
-int ind_wt=0;
-int ind_rt=0;
-
 int string_to_int(string str) // Convert the string to integer
 {
     // object from the class stringstream
@@ -48,14 +40,6 @@ void* write_to_card(void *arg) // Card Write [Critical Section]
 {
     int num=((intptr_t) arg); // Extracting thread number from argument
 
-    pthread_mutex_lock(&mutex1); //Used for  Waiting while the highest priority process arrives
-	
-	while(num != order[ind_wt]) // Order of priority maintained
-	{
-		pthread_mutex_unlock(&mutex1);
- 	    pthread_cond_wait(&cond, &mutex1);
- 	}
-
     sem_wait(&writeblock); // write block Sempahore is binary Semaphore which controls who writes.
 
     data_val++; // Value wrote to the card
@@ -64,15 +48,11 @@ void* write_to_card(void *arg) // Card Write [Critical Section]
 
     cout<<"(Only 1 writer inside Critical Section....)\n";
 
-    sleep(1); // Sleep for a random time
+    sleep(3); // Sleep for a random time
 
     cout<<"Person "<<num+1<<" Done with writing, so Exiting Critical Section.....\n";
 
-    ind_wt++;              // Let in next process
-    sem_post(&writeblock); 
-
-    pthread_cond_broadcast(&cond);
-    pthread_mutex_unlock(&mutex1); 
+    sem_post(&writeblock);  
 
     pthread_exit(NULL);
 
@@ -82,14 +62,6 @@ void* write_to_card(void *arg) // Card Write [Critical Section]
 void* read_from_card(void *arg)
 {
     int num= ((intptr_t)arg); // Extracting Thread number from arguments
-
-    pthread_mutex_lock(&mutex2); //Used for  Waiting while the highest priority process arrives
-	
-	while(num != order[ind_rt]) // Order of priority maintained
-	{
-		pthread_mutex_unlock(&mutex2);
- 	    pthread_cond_wait(&cond, &mutex2);
- 	}
 
     sem_wait(&mutex);
 
@@ -102,15 +74,9 @@ void* read_from_card(void *arg)
     cout<<"\nPerson "<<num+1<<" is reading...";
     cout<<"("<<numOfFriends- rcount<<" Readers are inside the Critical Section...)\n";
 
-    ind_rt++;  
-
-    pthread_cond_broadcast(&cond);
-    pthread_mutex_unlock(&mutex2);
-
     sem_post(&mutex);
     
     //printf("(%d Readers are inside the Critical Section.....)\n",numOfFriends - rcount); // Using printf because cout is thread unsafe function
-    
     
     sleep(2); // Sleep for random amount of time
 
@@ -125,8 +91,6 @@ void* read_from_card(void *arg)
     }
 
     sem_post(&mutex);
-
-    track=-1;
 
     pthread_exit(NULL);
 
@@ -162,8 +126,6 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
 
         /* setting the new scheduling param */
         ret = pthread_attr_setschedparam (&tattr, &param);
-
-        order.push_back(pq.top().second);
 
         /* with new priority specified */
         pthread_create(&friends_writer[pq.top().second], &tattr, write_to_card, (void *) (intptr_t) pq.top().second);
