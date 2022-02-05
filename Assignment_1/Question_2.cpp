@@ -73,7 +73,7 @@ void* read_from_card(void *arg)
 
     //printf("\nPerson %d is reading...",track);
     cout<<"\nPerson "<<num+1<<" is reading...";
-    cout<<"("<<numOfFriends- rcount<<" Readers are inside the Critical Section...)\n";
+    cout<<"("<<rcount<<" Readers are inside the Critical Section...)\n";
 
     sem_post(&mutex);
     
@@ -131,8 +131,9 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
        
         /* with new priority specified */
         pthread_create(&friends_writer[pq.top().second], &tattr, write_to_card, (void *) (intptr_t) pq.top().second);
-        
+        sleep(rand()%3+1);
         pthread_create (&friends_reader[pq.top().second], &tattr, read_from_card, (void *) (intptr_t) pq.top().second); 
+        sleep(rand()%3+1);
 
         pq.pop();
     }
