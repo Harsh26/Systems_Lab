@@ -151,11 +151,6 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
 
 }
 
-void generateRandomCode(vector<int> &couponNumbers,int n)
-{
-	
-}
-
 int main()
 {
     srand(0);
@@ -178,7 +173,7 @@ int main()
 	cin>>menu;
 	switch(menu)
 	{
-	case 1: //generateRandomCode(couponNumbers,n); 
+	case 1:
 			
 			for(int i = 0; i < n; i++)
 			{
