@@ -178,7 +178,7 @@ int main()
 			for(int i = 0; i < n; i++)
 			{
 	
-				int x = (100 + rand()) % 1000;
+				int x = (rand() % (999-100+1))+100;
 				cout<<x<<" ";
 				 vector<int> :: iterator itr;
 				itr = std::find (couponNumbers.begin(), couponNumbers.end(), x);
@@ -225,6 +225,10 @@ int main()
 
     }
     break;
+
+    default:
+            cout<<"\n\nWrong option. Exiting...\n";
+            exit(0);
 }
 
 
