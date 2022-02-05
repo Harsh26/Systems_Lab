@@ -131,6 +131,7 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
        
         /* with new priority specified */
         pthread_create(&friends_writer[pq.top().second], &tattr, write_to_card, (void *) (intptr_t) pq.top().second);
+        
         pthread_create (&friends_reader[pq.top().second], &tattr, read_from_card, (void *) (intptr_t) pq.top().second); 
 
         pq.pop();
