@@ -40,9 +40,9 @@ int string_to_int(string str) // Convert the string to integer
 
 void* write_to_card(void *arg) // Card Write [Critical Section] 
 {
-    sem_wait(&writeblock); // write block Sempahore is binary Semaphore which controls who writes.
-
     int num=((intptr_t) arg); // Extracting thread number from argument
+
+    sem_wait(&writeblock); // write block Sempahore is binary Semaphore which controls who writes.
 
     track=num+1; // Tracking f+1 person who is inside the critical section for writing
 
