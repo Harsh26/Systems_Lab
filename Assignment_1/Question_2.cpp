@@ -49,7 +49,7 @@ void* write_to_card(void *arg) // Card Write [Critical Section]
 
     cout<<"(Only 1 writer inside Critical Section....)\n";
 
-    sleep(3); // Sleep for a random time
+    sleep(3); // Sleep for some time
 
     cout<<"Person "<<num+1<<" Done with writing, so Exiting Critical Section.....\n";
 
@@ -79,7 +79,7 @@ void* read_from_card(void *arg)
     
     //printf("(%d Readers are inside the Critical Section.....)\n",numOfFriends - rcount); // Using printf because cout is thread unsafe function
     
-    sleep(2); // Sleep for random amount of time
+    sleep(2); // Sleep for some amount of time
 
     sem_wait(&mutex);
 
@@ -119,17 +119,17 @@ void reader_writer(priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pa
         /* initialized with default attributes */
         ret = pthread_attr_init (&tattr);
 
-        /* safe to get existing scheduling param */
+        /* safe to get existing scheduling param. Gets the scheduling policy and associated scheduling parameters of thread*/
         ret = pthread_attr_getschedparam (&tattr, &param);
 
         /* set the priority; others are unchanged */
         param.sched_priority = newprio;
 
-        /* setting the new scheduling param */
+        /* setting the new scheduling param. Sets the thread scheduling parameters attribute in the thread attribute object attr to param. */
         ret = pthread_attr_setschedparam (&tattr, &param);
 
        
-        /* with new priority specified */
+        /* with new priority specified. intptr_t  casts a pointer to int type*/
         pthread_create(&friends_writer[pq.top().second], &tattr, write_to_card, (void *) (intptr_t) pq.top().second);
         sleep(rand()%3+1);
         pthread_create (&friends_reader[pq.top().second], &tattr, read_from_card, (void *) (intptr_t) pq.top().second); 
