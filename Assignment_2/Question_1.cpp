@@ -2,7 +2,9 @@
 #include<vector>
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 using namespace std;
-int main(int argc, char** argv) {
+
+int main() 
+{
 	
 	int n1,n2, n3,noOfReq;
 	cout<<"Enter number of Single Occupancy rooms : ";
