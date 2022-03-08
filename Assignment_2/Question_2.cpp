@@ -4,6 +4,8 @@
 #include <sstream>
 #include <algorithm>
 #include <utility>
+#include <map>
+#include <queue>
 
 using namespace std;
 
@@ -193,53 +195,90 @@ void B_tech(string subject,vector<string>& tray, int &fifo)
     }    
 }
 
-void M_tech(string subject,vector<string>& tray)
+void M_tech(string subject,vector<string>& tray,map<string,int>& mp,int c)
 {
-    for(int i=0;i<tray.size();i++)
+    // Find if element is present in memory or not
+    auto it = find(tray.begin(), tray.end(), subject);
+  
+    // If element is not present
+    if (it == tray.end()) 
     {
-        
-    }   
+        // If memory is full
+        if (tray.size() == c) 
+        {
+  
+            // Decrease the frequency
+            mp[tray[0]]--;
+  
+            // Remove the first element as
+            // It is least frequently used
+            tray.erase(tray.begin());
+        }
+  
+        // Add the element at the end of memory
+        tray.push_back(subject);
+        // Increase its frequency
+        mp[subject]++;
+  
+        }
+        else 
+        {
+  
+            // If element is present
+            // Remove the element
+            // And add it at the end
+            // Increase its frequency
+            mp[subject]++;
+            tray.erase(it);
+            tray.push_back(subject);
+        }
+  
+        // Compare frequency with other pages
+        // starting from the 2nd last page                 
+        int k = tray.size() - 2;
+  
+        // Sort the pages based on their frequency 
+        // And time at which they arrive
+        // if frequency is same
+        // then, the page arriving first must be placed first
+        while (mp[tray[k]] > mp[tray[k + 1]] && k > -1) 
+        {
+            swap(tray[k + 1], tray[k]);
+            k--;
+        }
+     
 }
 
-void P_hd(string subject,vector<pair<string,int>>& tray,int &lru)
+void P_hd(string subject,vector<string>& tray,vector<string> &prev,int ref)
 {
     //vector<pair<string,int>> :: iterator itr;
 
     //itr = std :: find(tray.begin(),tray.end(),subject);
 
-    for(int i=0;i<tray.size();i++)
+    for(int i=0;i<tray.size();i++) // If Book found in tray, return
     {
-        if(tray[i].first == subject)
-        {
-            tray[i].second += 1;
-            return;
-        }
+        if(tray[i] == subject)
+        return;
     }
     
     for(int i=0;i<tray.size();i++) // Else, see if any vacant position
     {
-        if(tray[i].first == "NULL")
+        if(tray[i] == "NULL")
         {
-            tray[i].first=subject;
-            tray[i].second=0;
+            tray[i]=subject;
             return;
         }
     }
 
-    int min_index;
-    int min_val=INT_MAX;
-
     for(int i=0;i<tray.size();i++) // Replace the book since tray is full
     {
-        if(min_val > tray[i].second)
+        if(tray[i] == prev[ref])
         {
-            min_val = tray[i].second;
-            min_index = i;
+            tray[i]=subject;
+            return;  
         }
     } 
-
-    tray[min_index]={subject,tray[min_index].second+1};
-    return;    
+     
 }
 
 void print_tray(vector<string> tray,char course)
@@ -265,15 +304,13 @@ void print_tray(vector<string> tray,char course)
 
 void Process()
 {
+    vector<string> tb(BookPerTray[0],"NULL");
+    vector<string> tm;//(BookPerTray[1],"NULL");
+    vector<string> tp(BookPerTray[2],"NULL");
+
     int fifo = 0;  // For maintaining to-be-replaced book in case of B.tech
 
-    int lfreq = 0; // For maintaining to-be-replaced book in case of M.tech
-
-    int lru = 0;   // For maintaining to-be-replaced book in case of P.hd
-
-    vector<string> tb(BookPerTray[0],"NULL");
-    vector<string> tm(BookPerTray[1],"NULL");
-    vector<pair<string,int>> tp(BookPerTray[2],make_pair("NULL",lru));
+    map<string,int> lfreq; // For maintaining to-be-replaced book in case of M.tech
 
     for(int i=0;i<seq.size();i++)
     {
@@ -287,21 +324,52 @@ void Process()
 
         else if(seq[i][0] == 'M')
         {
-            M_tech(seq[i],tm);
+
+            M_tech(seq[i],tm,lfreq,BookPerTray[1]);
+
+            cout<<"\n\nInserting: "<<seq[i];
+            print_tray(tm,seq[i][0]);
+
         }
 
         else if(seq[i][0] == 'P')
         {
-            P_hd(seq[i],tp,lru);
+            vector<string> prev_seq(BookPerTray[2],"NULL");   // For maintaining to-be-replaced book in case of P.hd
 
-            vector<string> phd_tray(BookPerTray[2]);
+            if(i >= BookPerTray[2])
+            {
+                int k=i-1;
 
-            int tray_index=0;
-            for(auto itr : tp)
-            phd_tray[tray_index++]=itr.first+" "+to_string(itr.second);
+                for(int p=0;p<prev_seq.size();p++)
+                {
+                    vector<string> :: iterator itr;
+                    itr = std :: find(prev_seq.begin(),prev_seq.end(),seq[k]);
+
+                    if(itr == prev_seq.end())
+                    {
+                        prev_seq[p]=seq[k];
+                    }
+
+                    else
+                    p--;
+
+                    k--;
+
+                    if(k<0)
+                    break;
+                }
+
+                /*cout<<"\nprev_seq: ";
+                for(int p=0;p<prev_seq.size();p++)
+                cout<<prev_seq[p]<<" ";
+                cout<<"\n";*/
+
+            }
+
+            P_hd(seq[i],tp,prev_seq,prev_seq.size()-1);
 
             cout<<"\n\nInserting: "<<seq[i];
-            print_tray(phd_tray,seq[i][0]);
+            print_tray(tp,seq[i][0]);
         }
 
     }
