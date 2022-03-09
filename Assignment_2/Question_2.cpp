@@ -388,7 +388,7 @@ void print_tray_bookid(vector<string> tray,char course,map<string,int> bookid)
 
     ofstream outfile;
 
-    outfile.open("output.txt", std::ios_base::app); // append instead of overwrite 
+    outfile.open("output_Question_2.txt", std::ios_base::app); // append instead of overwrite 
 
     if(course == 'B')
     {
@@ -556,7 +556,7 @@ void Process()
 
     cout<<"\n\n*****            Output              *****\n\n";
 
-    ofstream MyFile("output.txt");
+    ofstream MyFile("output_Question_2.txt");
 
     cout<<"\nNumber of times Librarian has to search entire Library depo: "<<num_miss_btech+num_miss_mtech+num_miss_phd<<endl;
     MyFile << "\nNumber of times Librarian has to search entire Library depo: "<<num_miss_btech+num_miss_mtech+num_miss_phd<<endl;
