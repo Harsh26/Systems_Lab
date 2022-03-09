@@ -298,7 +298,7 @@ void M_tech(string subject,vector<string>& tray,map<string,int>& mp,int c,map<st
     // And time at which they arrive
     // if frequency is same
     // then, the page arriving first must be placed first
-    while (mp[tray[k]] > mp[tray[k + 1]] && k > -1) 
+    while (k > -1 && mp[tray[k]] > mp[tray[k + 1]]) 
     {
         swap(tray[k + 1], tray[k]);
         k--;
@@ -386,26 +386,48 @@ void print_tray_bookid(vector<string> tray,char course,map<string,int> bookid)
     if(tray[0]=="NULL")
     return;
 
+    ofstream outfile;
+
+    outfile.open("output.txt", std::ios_base::app); // append instead of overwrite 
+
     if(course == 'B')
-    cout<<"\nBook-ID, Subject-ID at end of simulation for B.tech: \n";
+    {
+        cout<<"\nBook-ID, Subject-ID at end of simulation for B.tech: \n";
+        outfile << "\nBook-ID, Subject-ID at end of simulation for B.tech: \n";
+    }
 
     else if(course == 'M')
-    cout<<"\nBook-ID, Subject-ID at end of simulation for M.tech: \n";
+    {
+        cout<<"\nBook-ID, Subject-ID at end of simulation for M.tech: \n";
+        outfile << "\nBook-ID, Subject-ID at end of simulation for M.tech: \n";
+    }
 
     else if(course == 'P')
-    cout<<"\nBook-ID, Subject-ID at end of simulation for P.hd: \n";
+    {
+        cout<<"\nBook-ID, Subject-ID at end of simulation for P.hd: \n";
+        outfile << "\nBook-ID, Subject-ID at end of simulation for P.hd: \n";
+    }
 
     for(int i=0;i<tray.size();i++)
     {
         cout<<"\t "<<" --------"<<"\n";
+        outfile << "\t "<<" --------"<<"\n";
+
         cout<<"\t"<<i<<" |  "<<tray[i]<<"  |";
+        outfile << "\t"<<i<<" |  "<<tray[i]<<"  |";
+
         auto itr=bookid.find(tray[i]);
-        cout<<" Book id: "<<(*itr).second;
-        cout<<"\n";
+        cout<<" Book id: "<<(*itr).second<<"\n";
+
+        outfile <<" Book id: "<<(*itr).second<<"\n";
+    
         //cout<<"\t "<<" --------"<<"\n";
     }
 
     cout<<"\n\n";
+    outfile << "\n\n";
+
+    outfile.close();
 }
 
 vector<string> mostFrequent(vector<string> arr, int n)
@@ -499,7 +521,7 @@ void Process()
                     vector<string> :: iterator itr;
                     itr = std :: find(prev_seq.begin(),prev_seq.end(),seq[k]);
 
-                    if(itr == prev_seq.end())
+                    if(itr == prev_seq.end() && seq[k][0] == 'P')
                     {
                         prev_seq[p]=seq[k];
                     }
@@ -513,10 +535,10 @@ void Process()
                     break;
                 }
 
-                /*cout<<"\nprev_seq: ";
+                cout<<"\nprev_seq: ";
                 for(int p=0;p<prev_seq.size();p++)
                 cout<<prev_seq[p]<<" ";
-                cout<<"\n";*/
+                cout<<"\n";
 
             }
 
@@ -533,29 +555,51 @@ void Process()
     vector<string> id_max_num_of_book_phd = mostFrequent(seq_phd,seq_phd.size());
 
     cout<<"\n\n*****            Output              *****\n\n";
+
+    ofstream MyFile("output.txt");
+
     cout<<"\nNumber of times Librarian has to search entire Library depo: "<<num_miss_btech+num_miss_mtech+num_miss_phd<<endl;
+    MyFile << "\nNumber of times Librarian has to search entire Library depo: "<<num_miss_btech+num_miss_mtech+num_miss_phd<<endl;
     
+    cout<<"\nNum miss btech="<<num_miss_btech;
+    cout<<"\nNum miss mtech="<<num_miss_mtech;
+    cout<<"\nNum miss phd="<<num_miss_phd;
+
     cout<<"\n\n";
+    MyFile << "\n\n";
 
     cout<<"\nSubject id for which max no. of book issued B.tech: ";
+    MyFile << "\nSubject id for which max no. of book issued B.tech: ";
+
     for(auto iter : id_max_num_of_book_btech)
     {
         cout<<iter<<" ";
+        MyFile << iter <<" ";
     }
 
     cout<<"\nSubject id for which max no. of book issued M.tech: ";
+    MyFile << "\nSubject id for which max no. of book issued M.tech: ";
+
     for(auto iter : id_max_num_of_book_mtech)
     {
         cout<<iter<<" ";
+        MyFile << iter <<" ";
     }
 
     cout<<"\nSubject id for which max no. of book issued P.hd: ";
+    MyFile << "\nSubject id for which max no. of book issued P.hd: ";
+
     for(auto iter : id_max_num_of_book_phd)
     {
         cout<<iter<<" ";
+        MyFile << iter <<" ";
     }
+
     cout<<"\n\n";
-    
+    MyFile<<"\n\n";
+
+    // Close the file
+    MyFile.close();
     
     print_tray_bookid(tb,'B',bookid_btech);
 
