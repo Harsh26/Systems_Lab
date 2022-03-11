@@ -17,27 +17,27 @@ int num_miss_btech;
 int num_miss_mtech;
 int num_miss_phd;
 
-void print_input()
+void print_input() // For printing file input on console
 {
     cout<<"Following is content of file:-\n\n";
 
     cout<<"Number of subject B.tech - M.tech - P.hd: ";
 
-    for(int i=0;i<NumSubject.size();i++)
+    for(int i=0;i<NumSubject.size();i++) // Print Number of Subject
     {
         cout<<NumSubject[i]<<" ";
     }
     cout<<"\n\n";
 
     cout<<"Number of books/tray B.tech - M.tech - P.hd: ";
-    for(int i=0;i<BookPerTray.size();i++)
+    for(int i=0;i<BookPerTray.size();i++) // Print Books per tray of each course
     {
         cout<<BookPerTray[i]<<" ";
     }
     cout<<"\n\n";
 
     cout<<"Sequence: ";
-    for(int i=0;i<seq.size();i++)
+    for(int i=0;i<seq.size();i++) // Print Request Sequence
     {
         cout<<seq[i]<<" ";
     }
@@ -101,9 +101,22 @@ void readInput()
     print_input();
 }
 
-void validateInput()
+void validateInput() // Function to check if all inputs align the required properties
 {
-    for(int i=0;i<3;i++)
+    for(int i=0;i<seq.size();i++) // Handle Upper case/lower case comparison problem
+    {
+        if(seq[i][0] == 'b')
+        seq[i][0]='B';
+
+        else if(seq[i][0] == 'm')
+        seq[i][0]='M';
+
+        else if(seq[i][0] == 'p')
+        seq[i][0]='P';
+
+    }
+
+    for(int i=0;i<3;i++) // Check numbers if they make sense
     {
         if(NumSubject[i] < BookPerTray[i])
         {
@@ -112,7 +125,7 @@ void validateInput()
         }
     }
 
-    vector<string> possibleseq;
+    vector<string> possibleseq; // Possible sequence of input to be checked
 
     int btech_subjects = NumSubject[0];
 
@@ -141,7 +154,7 @@ void validateInput()
         possibleseq.push_back(x);
     }
 
-    for(int i=0;i<seq.size();i++)
+    for(int i=0;i<seq.size();i++) // Subject id should start with P, M, B only. Any other would result in error
     {
         vector<string> :: iterator itr;
         itr = std :: find(possibleseq.begin(),possibleseq.end(),seq[i]);
@@ -171,16 +184,9 @@ void validateInput()
     cout<<"\nAll inputs validated...\n";
 }
 
+// Btech tray handling
 void B_tech(string subject,vector<string>& tray, int &fifo,map<string,int>& bookid)
 {
-    /*vector<string> :: iterator itr;
-
-    itr = std :: find(tray.begin(),tray.end(),subject);
-
-    if(itr != tray.end()) // If Book found in tray, return
-    {}
-        return;
-    }*/
     for(int i=0;i<tray.size();i++) 
     {
         if(tray[i] == subject) // If Book found in tray
@@ -225,13 +231,14 @@ void B_tech(string subject,vector<string>& tray, int &fifo,map<string,int>& book
     }    
 }
 
+// Mtech tray handling
 void M_tech(string subject,vector<string>& tray,map<string,int>& mp,int c,map<string,int>& bookid)
 {
     // Find if element is present in memory or not
-    auto it = find(tray.begin(), tray.end(), subject);
+    auto iter = find(tray.begin(), tray.end(), subject);
   
     // If element is not present
-    if (it == tray.end()) 
+    if (iter == tray.end()) 
     {
         num_miss_mtech++;
 
@@ -242,8 +249,7 @@ void M_tech(string subject,vector<string>& tray,map<string,int>& mp,int c,map<st
             // Decrease the frequency
             mp[tray[0]]--;
   
-            // Remove the first element as
-            // It is least frequently used
+            // Remove the first element since It is least frequently used
             tray.erase(tray.begin());
 
             flag=true;
@@ -282,22 +288,16 @@ void M_tech(string subject,vector<string>& tray,map<string,int>& mp,int c,map<st
         // If element is present
         bookid[subject]++; // Issue already present book, add next book id at later point in time
 
-        // Remove the element
-        // And add it at the end
-        // Increase its frequency
+        // Remove the element and add it at the end and Increase its frequency
         mp[subject]++;
-        tray.erase(it);
+        tray.erase(iter);
         tray.push_back(subject);
     }
   
-    // Compare frequency with other pages
-    // starting from the 2nd last page                 
+    // Compare frequency with other pages starting from the 2nd last page                 
     int k = tray.size() - 2;
   
-    // Sort the pages based on their frequency 
-    // And time at which they arrive
-    // if frequency is same
-    // then, the page arriving first must be placed first
+    // Sort the pages based on their frequency  And time at which they arrive if frequency is same then, the page arriving first must be placed first
     while (k > -1 && mp[tray[k]] > mp[tray[k + 1]]) 
     {
         swap(tray[k + 1], tray[k]);
@@ -306,12 +306,9 @@ void M_tech(string subject,vector<string>& tray,map<string,int>& mp,int c,map<st
     
 }
 
+// Phd Tray handling
 void P_hd(string subject,vector<string>& tray,vector<string> &prev,int ref,map<string,int>& bookid)
 {
-    //vector<pair<string,int>> :: iterator itr;
-
-    //itr = std :: find(tray.begin(),tray.end(),subject);
-
     for(int i=0;i<tray.size();i++) // If Book found in tray, return
     {
         if(tray[i] == subject)
@@ -357,7 +354,7 @@ void P_hd(string subject,vector<string>& tray,vector<string> &prev,int ref,map<s
      
 }
 
-void print_tray(vector<string> tray,char course)
+void print_tray(vector<string> tray,char course) // Function to print tray situation
 {
     if(course == 'B')
     cout<<"\nCondition of B.tech tray: \n";
@@ -378,6 +375,7 @@ void print_tray(vector<string> tray,char course)
     cout<<"\n\n";
 }
 
+// Function to print tray situation along with book id
 void print_tray_bookid(vector<string> tray,char course,map<string,int> bookid)
 {
     if(tray.size()==0)
@@ -430,6 +428,7 @@ void print_tray_bookid(vector<string> tray,char course,map<string,int> bookid)
     outfile.close();
 }
 
+// Function to find most frequent subject
 vector<string> mostFrequent(vector<string> arr, int n)
 {
     vector<string> mfq;
@@ -461,8 +460,11 @@ vector<string> mostFrequent(vector<string> arr, int n)
     return res;
 }
 
+
+// Driver code for whole program
 void Process()
 {
+    // Seprate the sequence request
     vector<string> seq_btech;
     vector<string> seq_mtech;
     vector<string> seq_phd;
@@ -479,34 +481,35 @@ void Process()
 
     map<string,int> lfreq; // For maintaining to-be-replaced book in case of M.tech
 
+    // Maps for book id of each course
     map<string,int> bookid_btech;
     map<string,int> bookid_mtech;
     map<string,int> bookid_phd;
 
     for(int i=0;i<seq.size();i++)
     {
-        if(seq[i][0] == 'B')
+        if(seq[i][0] == 'B') // Btech subject sequence
         {
             seq_btech.push_back(seq[i]);
 
             B_tech(seq[i],tb,fifo,bookid_btech);
 
-            cout<<"\n\nInserting: "<<seq[i];
-            print_tray(tb,seq[i][0]);
+            //cout<<"\n\nInserting: "<<seq[i];
+            //print_tray(tb,seq[i][0]);
         }
 
-        else if(seq[i][0] == 'M')
+        else if(seq[i][0] == 'M') // Mtech Subject Sequence
         {
             seq_mtech.push_back(seq[i]);
 
             M_tech(seq[i],tm,lfreq,BookPerTray[1],bookid_mtech);
 
-            cout<<"\n\nInserting: "<<seq[i];
-            print_tray(tm,seq[i][0]);
+            //cout<<"\n\nInserting: "<<seq[i];
+            //print_tray(tm,seq[i][0]);
 
         }
 
-        else if(seq[i][0] == 'P')
+        else if(seq[i][0] == 'P') // Phd Subject Sequence
         {
             seq_phd.push_back(seq[i]);
 
@@ -535,24 +538,24 @@ void Process()
                     break;
                 }
 
-                cout<<"\nprev_seq: ";
+                /*cout<<"\nprev_seq: ";
                 for(int p=0;p<prev_seq.size();p++)
                 cout<<prev_seq[p]<<" ";
-                cout<<"\n";
+                cout<<"\n";*/
 
             }
 
             P_hd(seq[i],tp,prev_seq,prev_seq.size()-1,bookid_phd);
 
-            cout<<"\n\nInserting: "<<seq[i];
-            print_tray(tp,seq[i][0]);
+            //cout<<"\n\nInserting: "<<seq[i];
+            //print_tray(tp,seq[i][0]);
         }
 
     }
 
-    vector<string> id_max_num_of_book_btech = mostFrequent(seq_btech,seq_btech.size());
-    vector<string> id_max_num_of_book_mtech = mostFrequent(seq_mtech,seq_mtech.size());
-    vector<string> id_max_num_of_book_phd = mostFrequent(seq_phd,seq_phd.size());
+    vector<string> subj_id_max_num_of_book_btech = mostFrequent(seq_btech,seq_btech.size());
+    vector<string> subj_id_max_num_of_book_mtech = mostFrequent(seq_mtech,seq_mtech.size());
+    vector<string> subj_id_max_num_of_book_phd = mostFrequent(seq_phd,seq_phd.size());
 
     cout<<"\n\n*****            Output              *****\n\n";
 
@@ -561,9 +564,9 @@ void Process()
     cout<<"\nNumber of times Librarian has to search entire Library depo: "<<num_miss_btech+num_miss_mtech+num_miss_phd<<endl;
     MyFile << "\nNumber of times Librarian has to search entire Library depo: "<<num_miss_btech+num_miss_mtech+num_miss_phd<<endl;
     
-    cout<<"\nNum miss btech="<<num_miss_btech;
-    cout<<"\nNum miss mtech="<<num_miss_mtech;
-    cout<<"\nNum miss phd="<<num_miss_phd;
+    //cout<<"\nNum miss btech="<<num_miss_btech;
+    //cout<<"\nNum miss mtech="<<num_miss_mtech;
+    //cout<<"\nNum miss phd="<<num_miss_phd;
 
     cout<<"\n\n";
     MyFile << "\n\n";
@@ -571,7 +574,7 @@ void Process()
     cout<<"\nSubject id for which max no. of book issued B.tech: ";
     MyFile << "\nSubject id for which max no. of book issued B.tech: ";
 
-    for(auto iter : id_max_num_of_book_btech)
+    for(auto iter : subj_id_max_num_of_book_btech)
     {
         cout<<iter<<" ";
         MyFile << iter <<" ";
@@ -580,7 +583,7 @@ void Process()
     cout<<"\nSubject id for which max no. of book issued M.tech: ";
     MyFile << "\nSubject id for which max no. of book issued M.tech: ";
 
-    for(auto iter : id_max_num_of_book_mtech)
+    for(auto iter : subj_id_max_num_of_book_mtech)
     {
         cout<<iter<<" ";
         MyFile << iter <<" ";
@@ -589,7 +592,7 @@ void Process()
     cout<<"\nSubject id for which max no. of book issued P.hd: ";
     MyFile << "\nSubject id for which max no. of book issued P.hd: ";
 
-    for(auto iter : id_max_num_of_book_phd)
+    for(auto iter : subj_id_max_num_of_book_phd)
     {
         cout<<iter<<" ";
         MyFile << iter <<" ";
@@ -601,6 +604,7 @@ void Process()
     // Close the file
     MyFile.close();
     
+    // Printing on console
     print_tray_bookid(tb,'B',bookid_btech);
 
     print_tray_bookid(tm,'M',bookid_mtech);
