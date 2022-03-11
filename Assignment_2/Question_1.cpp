@@ -28,19 +28,6 @@ void readInput()
     }
 
     // Reading input...
-
-
-int main() 
-{
-	
-	int n1,n2, n3,noOfReq;
-	cout<<"Enter number of Single Occupancy rooms : ";
-	cin>>n1;
-	cout<<"Enter number of Double Occupancy rooms : ";
-	cin>>n2;
-	cout<<"Enter number of Triple Occupancy rooms : ";
-	cin>>n3;
-	
 	
 	
     infile>>n1;
@@ -86,9 +73,8 @@ int main(int argc, char** argv) {
 
 	
 	int noOfBlocks = n1 + n2 + n3;
-	int flags[noOfReq] = {0},misAlloc[2];
-	misAlloc[0] = 0;
-	misAlloc[1] = 0;
+	int flags[noOfReq] = {0},misAlloc[3] = {0};
+	
 	for(int i = 0; i < noOfBlocks; i++)
 	{
 		allocation[i] = -1;
@@ -102,9 +88,8 @@ int main(int argc, char** argv) {
 			//finding first block size >= required size
 			if(allocation[j] == -1 && blockSize[j] >= requestEntries[i])
 			{
-				if(blockSize[j] != requestEntries[i])
-					misAlloc[blockSize[j] - 2]++;
 				
+				misAlloc[0]++;
 				allocation[j] = i;
 				flags[i] = 1;
 				profit[0] += 5000;
@@ -119,22 +104,7 @@ int main(int argc, char** argv) {
 	int count[3];
 	for(int i = 0; i <= 2; i++)
 	count[i] = 0;
-	
-	//checking number of rooms misallocated
-	for(int i = 0; i < noOfReq; i++)
-	{
-		if(flags[i] != 1)
-		{
-			if(misAlloc[requestEntries[i] - 2] > 0)
-			{
-				misAlloc[requestEntries[i] - 2]--;
-				count[0]++;
-			}
-			
-			
-		} 
-	}
-	
+
 	
 	for(int i = 0; i < noOfBlocks; i++)
 	{
@@ -146,8 +116,6 @@ int main(int argc, char** argv) {
 		flags[i] = 0;
 	}
 	
-	misAlloc[0] = 0;
-	misAlloc[1] = 0;
 	//best fit
 	for(int i = 0; i < noOfReq; i++)
 	{
@@ -166,8 +134,7 @@ int main(int argc, char** argv) {
         if (bestIdx != -1)
         {
             allocation[bestIdx] = i;
-            if(blockSize[bestIdx] != requestEntries[i])
-					misAlloc[blockSize[bestIdx] - 2]++;
+			misAlloc[1]++;
             flags[i] = 1;
            	profit[1] += 5000;
 			if(requestEntries[i] == 3)
@@ -176,19 +143,7 @@ int main(int argc, char** argv) {
 				profit[1] += 4000;
         }
 	}
-	//checking number of misallocated rooms
-	for(int i = 0; i < noOfReq; i++)
-	{
-		if(flags[i] != 1)
-		{
-			if(misAlloc[requestEntries[i] - 2] > 0)
-			{
-			misAlloc[requestEntries[i] - 2]--;
-			//count[1]++;
-			}
-			
-		} 
-	}
+	
 	
 	for(int i = 0; i < noOfBlocks; i++)
 	{
@@ -198,8 +153,6 @@ int main(int argc, char** argv) {
 	{
 		flags[i] = 0;
 	}
-	misAlloc[0] = 0;
-	misAlloc[1] = 0;
 	
 	//worst fit
 	for (int i = 0; i < noOfReq; i++)
@@ -220,8 +173,7 @@ int main(int argc, char** argv) {
         if (wstIdx != -1)
         {
             allocation[wstIdx] = i;
-            if(blockSize[wstIdx] != requestEntries[i])
-					misAlloc[blockSize[wstIdx] - 2]++;
+			misAlloc[2]++;
             flags[i] = 1;
             profit[2] += 5000;
 			if(requestEntries[i] == 3)
@@ -231,20 +183,11 @@ int main(int argc, char** argv) {
         }
     }
     
-    //checking for misallotted rooms
-    for(int i = 0; i < noOfReq; i++)
-	{
-		if(flags[i] != 1)
-		{
-			if(misAlloc[requestEntries[i] - 2] > 0)
-			{
-			
-			misAlloc[requestEntries[i] - 2]--;
-			count[2]++;
-			}
-			
-		} 
+    for(int i = 0; i < 3; i++)
+    {
+    	misAlloc[i] = noOfReq - misAlloc[i];
 	}
+  
 	//finding maximum profit
     int max = INT_MIN,maxInd;
     for(int i = 0; i < 3; i++)
@@ -255,6 +198,8 @@ int main(int argc, char** argv) {
     		maxInd = i;
 		}
 	}
+	
+	//writing output on file
 	ofstream outfile;
 	string fileName;
 	outfile.open("output.txt");
@@ -263,51 +208,68 @@ int main(int argc, char** argv) {
     {
     	if(i == 0)
     	{
-    		outfile<<"\nAman\t\t\t\t"<<profit[i]<<"\t\t\t\t"<<max - profit[i]<<"\t\t\t\t\t\t"<<count[i];
+    		outfile<<"\nAman\t\t\t\t"<<profit[i]<<"\t\t\t\t"<<max - profit[i]<<"\t\t\t\t\t\t"<<misAlloc[0] - misAlloc[1];
 		}
 		else if(i == 1)
     	{
-    		outfile<<"\nRaj\t\t\t\t"<<profit[i+1]<<"\t\t\t\t"<<max - profit[i+1]<<"\t\t\t\t\t\t"<<count[i+1];
+    		outfile<<"\nRaj\t\t\t\t"<<profit[i+1]<<"\t\t\t\t"<<max - profit[i+1]<<"\t\t\t\t\t\t"<<misAlloc[2] - misAlloc[1];
 		}
 		else if(i == 2)
     	{
-    		outfile<<"\nAlok\t\t\t\t"<<profit[i-1]<<"\t\t\t\t"<<max - profit[i-1]<<"\t\t\t\t\t\t"<<count[i-1];
+    		outfile<<"\nAlok\t\t\t\t"<<profit[i-1]<<"\t\t\t\t"<<max - profit[i-1]<<"\t\t\t\t\t\t"<<misAlloc[1] - misAlloc[1];
 		}
     }
-    switch(maxInd)
+    for(int i = 0; i < 3; i++)
     {
-    	case 0 : outfile<<"\nAman is best manager\n\n";
-    			break;
-    	case 1 : outfile<<"\nAlok is best manager\n\n";
-    			break;
-    	case 2 : outfile<<"\nRaj is best manager\n\n";
-    			break;
+    	if(profit[i] == max)
+    	{
+			switch(i)
+    		{
+    			case 0 : outfile<<"\n\nAman is best manager\n\n";
+    					break;
+    			case 1 : outfile<<"\nAlok is best manager\n\n";
+    					break;
+    			case 2 : outfile<<"\nRaj is best manager\n\n";
+    					break;
+			}
+		}
 	}
+    
 	outfile.close();
+	
+	//writing output on console
 	cout<<"Manager Name \t\t Revenue Generated (Rs)\t\tMoney Wasted because of Nature of Manager (Rs) \t\tNo. of Request rejected because of wrong allotment of rooms\n\n";
 	for(int i = 0; i < 3; i++)
     {
     	if(i == 0)
     	{
-    		cout<<"\nAman\t\t\t\t"<<profit[i]<<"\t\t\t\t"<<max - profit[i]<<"\t\t\t\t\t\t"<<count[i];
+    		cout<<"\nAman\t\t\t\t"<<profit[i]<<"\t\t\t\t"<<max - profit[i]<<"\t\t\t\t\t\t"<<misAlloc[0] - misAlloc[1];
 		}
 		else if(i == 1)
     	{
-    		cout<<"\nRaj\t\t\t\t"<<profit[i+1]<<"\t\t\t\t"<<max - profit[i+1]<<"\t\t\t\t\t\t"<<count[i+1];
+    		cout<<"\nRaj\t\t\t\t"<<profit[i+1]<<"\t\t\t\t"<<max - profit[i+1]<<"\t\t\t\t\t\t"<<misAlloc[2] - misAlloc[1];
 		}
 		else if(i == 2)
     	{
-    		cout<<"\nAlok\t\t\t\t"<<profit[i-1]<<"\t\t\t\t"<<max - profit[i-1]<<"\t\t\t\t\t\t"<<count[i-1];
+    		cout<<"\nAlok\t\t\t\t"<<profit[i-1]<<"\t\t\t\t"<<max - profit[i-1]<<"\t\t\t\t\t\t"<<misAlloc[1] - misAlloc[1];
 		}
     }
-    switch(maxInd)
+    
+    for(int i = 0; i < 3; i++)
     {
-    	case 0 : cout<<"\nAman is best manager\n\n";
-    			break;
-    	case 1 : cout<<"\nAlok is best manager\n\n";
-    			break;
-    	case 2 : cout<<"\nRaj is best manager\n\n";
-    			break;
+    	if(profit[i] == max)
+    	{
+			switch(i)
+    		{
+    			case 0 : cout<<"\n\nAman is best manager\n\n";
+    					break;
+    			case 1 : cout<<"\nAlok is best manager\n\n";
+    					break;
+    			case 2 : cout<<"\nRaj is best manager\n\n";
+    					break;
+			}
+		}
 	}
+    
 	return 0;
 }
