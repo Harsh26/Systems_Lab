@@ -18,6 +18,9 @@ int num_miss_btech;
 int num_miss_mtech;
 int num_miss_phd;
 
+int nb,nm,np;
+int tb,tm,tp;
+
 void print_input() // For printing file input on console
 {
     cout<<"Following is content of file:-\n\n";
@@ -67,8 +70,6 @@ void readInput()
 
     // Reading No. of Subjects...
 
-    int nb,nm,np;
-
     infile>>nb;
     infile>>nm;
     infile>>np;
@@ -78,8 +79,6 @@ void readInput()
     NumSubject[2]=(np); // No. of Subjects P.hd
 
     // Reading No. of books/tray...
-
-    int tb,tm,tp;
 
     infile>>tb;
     infile>>tm;
@@ -186,31 +185,31 @@ void validateInput() // Function to check if all inputs align the required prope
 }
 
 // Btech tray handling
-void B_tech(string subject,vector<string>& tray, int &fifo,map<string,int>& bookid)
+void B_tech(string subject,vector<string>& T1, int &fifo,map<string,int>& bookid)
 {
-    for(int i=0;i<tray.size();i++) 
+    for(int i=0;i<T1.size();i++) 
     {
-        if(tray[i] == subject) // If Book found in tray
+        if(T1[i] == subject) // If Book found in tray
         {
             bookid[subject]++; // Issue already present book, add next book id at later point in time
             return;
         }
     }
 
-    for(int i=0;i<tray.size();i++) // Else, see if any vacant position
+    for(int i=0;i<T1.size();i++) // Else, see if any vacant position
     {
-        if(tray[i] == "NULL")
+        if(T1[i] == "NULL")
         {
             num_miss_btech++;
-            tray[i]=subject;
+            T1[i]=subject;
             bookid[subject]=2; // Since tray is empty, 1st book id is brought and issued to student, 2nd book id is placed in tray
             return;
         }
     }
 
-    for(int i=0;i<tray.size();i++) // Replace the book pointed to, by fifo
+    for(int i=0;i<T1.size();i++) // Replace the book pointed to, by fifo
     {
-        tray[fifo]=subject;
+        T1[fifo]=subject;
 
         map<string,int> :: iterator iter;
         iter = bookid.find(subject);
@@ -225,7 +224,7 @@ void B_tech(string subject,vector<string>& tray, int &fifo,map<string,int>& book
             bookid[subject] += 1; // Since next book id is issued to student, next to next book id is placed in tray
         }
 
-        fifo=(fifo+1)%tray.size();
+        fifo=(fifo+1)%T1.size();
 
         num_miss_btech++;
         return;
@@ -233,31 +232,31 @@ void B_tech(string subject,vector<string>& tray, int &fifo,map<string,int>& book
 }
 
 // Mtech tray handling
-void M_tech(string subject,vector<string>& tray,map<string,int>& mp,int c,map<string,int>& bookid)
+void M_tech(string subject,vector<string>& T2,map<string,int>& mp,int c,map<string,int>& bookid)
 {
     // Find if element is present in memory or not
-    auto iter = find(tray.begin(), tray.end(), subject);
+    auto iter = find(T2.begin(), T2.end(), subject);
   
     // If element is not present
-    if (iter == tray.end()) 
+    if (iter == T2.end()) 
     {
         num_miss_mtech++;
 
         bool flag=false;
         // If memory is full
-        if (tray.size() == c) 
+        if (T2.size() == c) 
         {
             // Decrease the frequency
-            mp[tray[0]]--;
+            mp[T2[0]]--;
   
             // Remove the first element since It is least frequently used
-            tray.erase(tray.begin());
+            T2.erase(T2.begin());
 
             flag=true;
         }
   
         // Add the element at the end of memory
-        tray.push_back(subject);
+        T2.push_back(subject);
         // Increase its frequency
         mp[subject]++;
 
@@ -291,50 +290,50 @@ void M_tech(string subject,vector<string>& tray,map<string,int>& mp,int c,map<st
 
         // Remove the element and add it at the end and Increase its frequency
         mp[subject]++;
-        tray.erase(iter);
-        tray.push_back(subject);
+        T2.erase(iter);
+        T2.push_back(subject);
     }
   
     // Compare frequency with other pages starting from the 2nd last page                 
-    int k = tray.size() - 2;
+    int k = T2.size() - 2;
   
     // Sort the pages based on their frequency  And time at which they arrive if frequency is same then, the page arriving first must be placed first
-    while (k > -1 && mp[tray[k]] > mp[tray[k + 1]]) 
+    while (k > -1 && mp[T2[k]] > mp[T2[k + 1]]) 
     {
-        swap(tray[k + 1], tray[k]);
+        swap(T2[k + 1], T2[k]);
         k--;
     }
     
 }
 
 // Phd Tray handling
-void P_hd(string subject,vector<string>& tray,vector<string> &prev,int ref,map<string,int>& bookid)
+void P_hd(string subject,vector<string>& T3,vector<string> &prev,int ref,map<string,int>& bookid)
 {
-    for(int i=0;i<tray.size();i++) // If Book found in tray, return
+    for(int i=0;i<T3.size();i++) // If Book found in tray, return
     {
-        if(tray[i] == subject)
+        if(T3[i] == subject)
         {
             bookid[subject]++; // Issue already present book, add next book id at later point in time
             return;
         }
     }
     
-    for(int i=0;i<tray.size();i++) // Else, see if any vacant position
+    for(int i=0;i<T3.size();i++) // Else, see if any vacant position
     {
-        if(tray[i] == "NULL")
+        if(T3[i] == "NULL")
         {
             num_miss_phd++;
-            tray[i]=subject;
+            T3[i]=subject;
             bookid[subject]=2; // Since tray is empty, 1st book id is brought and issued to student, 2nd book id is placed in tray
             return;
         }
     }
 
-    for(int i=0;i<tray.size();i++) // Replace the book since tray is full
+    for(int i=0;i<T3.size();i++) // Replace the book since tray is full
     {
-        if(tray[i] == prev[ref])
+        if(T3[i] == prev[ref])
         {
-            tray[i]=subject;
+            T3[i]=subject;
 
             map<string,int> :: iterator iter;
             iter = bookid.find(subject);
@@ -474,9 +473,9 @@ void Process()
     num_miss_mtech = 0;
     num_miss_phd = 0;
 
-    vector<string> tb(BookPerTray[0],"NULL");
-    vector<string> tm;//(BookPerTray[1],"NULL");
-    vector<string> tp(BookPerTray[2],"NULL");
+    vector<string> T1(BookPerTray[0],"NULL");
+    vector<string> T2;//(BookPerTray[1],"NULL");
+    vector<string> T3(BookPerTray[2],"NULL");
 
     int fifo = 0;  // For maintaining to-be-replaced book in case of B.tech
 
@@ -493,7 +492,7 @@ void Process()
         {
             seq_btech.push_back(seq[i]);
 
-            B_tech(seq[i],tb,fifo,bookid_btech);
+            B_tech(seq[i],T1,fifo,bookid_btech);
 
             //cout<<"\n\nInserting: "<<seq[i];
             //print_tray(tb,seq[i][0]);
@@ -503,7 +502,7 @@ void Process()
         {
             seq_mtech.push_back(seq[i]);
 
-            M_tech(seq[i],tm,lfreq,BookPerTray[1],bookid_mtech);
+            M_tech(seq[i],T2,lfreq,BookPerTray[1],bookid_mtech);
 
             //cout<<"\n\nInserting: "<<seq[i];
             //print_tray(tm,seq[i][0]);
@@ -546,7 +545,7 @@ void Process()
 
             }
 
-            P_hd(seq[i],tp,prev_seq,prev_seq.size()-1,bookid_phd);
+            P_hd(seq[i],T3,prev_seq,prev_seq.size()-1,bookid_phd);
 
             //cout<<"\n\nInserting: "<<seq[i];
             //print_tray(tp,seq[i][0]);
@@ -606,11 +605,11 @@ void Process()
     MyFile.close();
     
     // Printing on console
-    print_tray_bookid(tb,'B',bookid_btech);
+    print_tray_bookid(T1,'B',bookid_btech);
 
-    print_tray_bookid(tm,'M',bookid_mtech);
+    print_tray_bookid(T2,'M',bookid_mtech);
 
-    print_tray_bookid(tp,'P',bookid_phd);
+    print_tray_bookid(T3,'P',bookid_phd);
 
 }
 
