@@ -2,105 +2,55 @@
 #include <vector>
 #include <cstring>
 #include <stdio.h>
+#include <cstdio>
 #include <math.h>
 #include <bits/stdc++.h>
 using namespace std;
 int contentStartInd = 0;
-class Disk{
+class Disk
+{
   private:
   // data structure to store Inode information
-    struct Inode{
-        //string file_name;
-       // int size;
+    struct Inode
+	{
         int number;
-        unordered_map<int,string> block;
-    }In;
-
-  // data structure to store SuperBlock information
-    /*struct SuperBlock{
-        bool usedBlocks[128];
-        struct Inode inodes[16];
-    }superBlock;
-    */
+        map<int,string> block;
+    };
     
     unordered_map<string,struct Inode> virtualFileSys;
-
-
-    //char dataBlocks[127][1024]; // 127 data blocks of size 1kB each
-
-    // function to check whether a file is present is or not
-   bool exists(string fileName){
-   		cout<<"in ";
+    //to check whether the file exists or not
+    bool exists(string fileName)
+	{
         for(auto it : virtualFileSys)
         {
-        	cout<<it.first<<" ";
-		
             if(it.first == fileName)
 			 return true;
 		}
         return false;
     }
 
-    // function to check whether the specified number of data blocks are availble
-   /* bool available(int size){
-        int freeBlockCount = 0;
-        for(auto block : superBlock.usedBlocks)
-            if(!block) freeBlockCount++;
-        return freeBlockCount >= size;
-    }
-
-    // function to find unused Inode
-    int getInode(){
-        for(int i=0; i<16; ++i)
-            if(!superBlock.inodes[i].used) return i;
-        return -1;
-    }*/
-
   public:
-   /* Disk(){
-        superBlock.usedBlocks[0] = true;
-        memset(dataBlocks, '\0', sizeof(dataBlocks));
-    }*/
-
-    // function to create new file
-    void create(string fileName, string content){
-        // refuse to create the file if size of greater than 8kB
-       /* if(size > 8){
-            cout << "File too large!" << endl;
-            return;
-        }
-*/
-        // check if a file with same name already exists
+   
+   //creating a file
+    void mf(string fileName, string content)
+	{
         if(exists(fileName))
 		{
             cout << "File already exists!" << endl;
             return;
         }
-
-        // check if specified number of data blocks are available
-      /*  if(!available(size)){
-            cout << "Could not create file. Specified number of data blocks are not available!" << endl;
-            return;
-        }*/
+        string fName = fileName + ".txt";
+		ofstream out;
+		out.open(fName);
+		
 
 		int noOfBlocks = ceil(content.length() * 1.0 / 4.0);
 		int inodeNum,size = content.length();
 		unordered_set<long int>set;
 
-        // get a free Inode if available
-       /* int curINode = getInode();
-        if(curINode == -1){
-            cout << "Maximum number of supported files already exist!" << endl;
-            return;
-        }
-*/
-        // setting Inode properties
-       /* strcpy(superBlock.inodes[curINode].file_name, file_name);
-        superBlock.inodes[curINode].used = 1;
-        superBlock.inodes[curINode].size = size;*/
-
-        // allocate data blocks to the file
         Inode inode;
+        
+        //generate unique random number for inode;
         do
         {
         	inodeNum =rand() % (rand() % 1000000);
@@ -112,100 +62,153 @@ class Disk{
         set.insert(inodeNum);
         t.number = inodeNum;
         
-       /* for(int i=1,j=0; i<128 && j<size; ++i){
-            if(!superBlock.usedBlocks[i]){
-                superBlock.inodes[curINode].blockPointers[j] = i;
-                superBlock.usedBlocks[i] = true;
-                ++j;
-            }
-        }*/
+       
         int k = 0;
         for(int i = 0; i < noOfBlocks; i++)
         {
+        	//creating diskBlocks
+        	ofstream out1;
+        	string blockName = fileName + to_string(i) + ".txt";
+        	out1.open(blockName);
+        	out<<blockName<<endl;
+        	
         	string temp ="";
-        	for(int j = 0; j < 4,k < size; j++)
+        	for(int j = 0; j < 4 && k < size; j++)
         	{
         		
         		temp += content[k++];
 			}
 			t.block[i] = temp;
+			out1<<temp;
+			out1.close();
 		}
         
 		virtualFileSys[fileName] = t;
-        cout << "Created new file: " << fileName << endl<<virtualFileSys[fileName].number<<endl;
-    for(auto it : virtualFileSys)
-        {
-        	cout<<it.first<<" "<<it.second.number<<"      ";
-		
-		}
+        cout << "New file Created " << fileName << endl;
+      	out.close();	
 	}
-
-
-    void deleteFile(string fileName){
-        // check if the file exists
-        if(!exists(fileName)){
+	//deleting a file
+    void df(string fileName)
+	{
+        if(!exists(fileName))
+		{
             cout << "File does not exist!" << endl;
             return;
         }
+        //traverse through map to find the file
+        for(auto it : virtualFileSys)
+        {
+            if(it.first == fileName)
+			{
+				for(auto it1 : it.second.block)
+       			{
+       				string blockName = fileName + to_string(it1.first)+ ".txt";
+       				const char *bName = blockName.c_str();
+       				int res = remove(bName);
+       				if(res!=0)
+        				cout<<"Unsuccessful delete"<<bName<<"\n\n";
+			 		it1.second="\0";
+			 	}
+			 	break;
+				
+			}
+		}
+		string delName = fileName + ".txt";
+		const char *fName = delName.c_str();
+		
+		int res = remove(fName);
+        if(res!=0)
+        	cout<<"Delete unsuccessful \n\n";
 		virtualFileSys.erase(fileName);
-        // free the data blocks used by the file
-       /* for(int i=0; i<16; ++i){
-            // get the Inode for the file and free corresponding data blocks
-            if(strcmp(file_name,superBlock.inodes[i].file_name) == 0){
-                superBlock.inodes[i].used = 0;
-                for(int dataBlock : superBlock.inodes[i].blockPointers){
-                    memset(dataBlocks[dataBlock], '\0', 1024);  // clearing the data block
-                    superBlock.usedBlocks[dataBlock] = false;  // adding to the free block lists
-                }
-                break;
-            }
-        }*/
-
-        cout << "Deleted file " << fileName << endl;
+        cout << "\n\nFile Deleted\n\n " << fileName << endl;
     }
 
-    void list(){
-        cout << "---------------------------------" << endl;
-        cout << "|  File Name\t|\tSize\t|" << endl;
-        cout << "---------------------------------" << endl;
+    void ls()
+	{
+    	 
+        cout << "*********************************" << endl;
+        cout << "|  File Name\t|\tInode Number\t|" << endl;
+        cout << "******************0***************" << endl;
 
         // check for every Inode which is in use
         for(auto it : virtualFileSys)
-             cout << it.first<<"  |    " <<it.second.number<<  endl;
+             cout << it.first<<"  \t|\t    " <<it.second.number<<  endl;
         cout << "---------------------------------" << endl;
+        
     }
 
-    void read(string fileName){
+    void pf(string fileName)
+	{
         // check if the file exists or not
-        /*if(!exists(file_name)){
+        if(!exists(fileName))
+		{
             cout << "File does not exist!" << endl;
             return;
-        }*/
-
+        }
+		
         // finding the Inode for the file
         for(auto it : virtualFileSys)
 		{
             if(fileName == it.first)
 			{
-                /*if(blockNum > inode.size){
-                    cout << "Invalid block number!" << endl;
-                    return;
-                }*/
 				struct Inode toPrint = it.second;
-				cout<<"inode number : "<<toPrint.number;
-				for(auto it1 : toPrint.block)
+				int noOfBlocks = toPrint.block.size();
+				//printing contents of all files
+				for(int i = 0; i < noOfBlocks; i++)
 				{
-					cout<<it1.first<<" "<<it1.second<<" ";
+					string blockName = fileName + to_string(i) + ".txt";
+					ifstream infile;
+					infile.open(blockName);
+					if(infile.is_open())
+					cout<<infile.rdbuf();
+					
 				}
-                // copy data in the specified block to the buffer
-                //strcpy(buf, virtaulFileSys[fileName]);
+				cout<<endl;
+				
                 break;
             }
         }
 
     }
-    void rename(string fileName,string newFileName)
+    void rf(string fileName,string newFileName)
     {
+    	
+    	if(!exists(fileName))
+		{
+            cout << "File does not exist!" << endl;
+            return;
+        }
+    	//renaming index file
+    	string fullName = fileName + ".txt";
+    	string newFullName = newFileName + ".txt";
+    	const char *fName = fullName.c_str();
+    	const char *fNameNew = newFullName.c_str();
+    	
+    	
+    	if(rename(fName, fNameNew) == 1)
+		cout<<"Error renaming file";
+		else
+		cout << "File renamed successfully";
+		
+		
+		//renaming diskBlocks presnt in index file
+		for(auto it : virtualFileSys)
+        {
+        	
+            if(it.first == fileName)
+			{
+				for(auto it1 : it.second.block)
+       			{
+       				string blockName = fileName + to_string(it1.first)+ ".txt";
+       				const char *bName = blockName.c_str();
+       				string newBlockName = newFileName + to_string(it1.first)+ ".txt";
+       				const char *bNameNew = newBlockName.c_str();
+			 	}
+			 	break;
+				
+			}
+		}
+		
     	for(auto it : virtualFileSys)
 		{
             if(fileName == it.first)
@@ -218,9 +221,8 @@ class Disk{
         }
     	
 	}
-
-  
 };
+//extracting command
 string extractCommand(string s)
 {
 	string command ="";
@@ -228,6 +230,7 @@ string extractCommand(string s)
     command += s[1];
 	return command;
 }
+//extracting file name
 string extractFileName(string s)
 {
 	string fileName = "";
@@ -244,7 +247,7 @@ string extractFileName(string s)
 	contentStartInd = i + 1;
 	return fileName;
 }
-
+//extracting contents
 string extractContents(string s)
 {
 	string contents = "";
@@ -261,33 +264,14 @@ int main()
 {
     Disk disk;
     srand(time(0));
-    int choice = 0;
-    cout<<"enter choice: ";
-    cin>>choice;
-    while(choice != 9)
+    cout<<"Enter 0 to exit the program\n\n ";
+    
+    while(1)
 	{
     	contentStartInd = 0;
-       /* cout << "Enter the operation that you want to perform." << endl;
-        cout << " 1. Create a new file" << endl;
-        cout << " 2. Delete an existing file" << endl;
-        cout << " 3. Read data from a file" << endl;
-        cout << " 4. Write data to a file" << endl;
-        cout << " 5. View all files" << endl;
-        cout << " 9. Exit" << endl;
-        cout << "Enter your choice: ";
-        cin >> choice;
-        cout << endl;
-	*/
-
-		//	char file_name[8];  // name of the file
-        // memset(file_name, '\0', 8);
-        //int blockNum;  // bolck number on which the read/write operation is to be performed
-        //char buffer[1024];  // buffer array to read or write the data
-        //memset(buffer, '\0', 1024);
-        Disk disk;
 		string str;
 		int size;
-		cout << "Enter the command : ";
+		cout << "\nEnter the command : ";
 		getline(cin >>ws, str);
         string command, contents;
         command = extractCommand(str);
@@ -298,91 +282,57 @@ int main()
         	fileName = extractFileName(str);
         	contents = extractContents(str);
         	size = contents.length();
-        	disk.create(fileName,contents);
+        	if(size<=0)
+        	{
+        		cout<<"\nInvalid input\n\n";
+        		continue;
+			}
+        	disk.mf(fileName,contents);
         	
 		}
         else if(command == "df")
         {
         	string fileName;
         	fileName = extractFileName(str);
-        	disk.deleteFile(fileName);
+        	disk.df(fileName);
 		}
 		else if(command == "rf")
         {
         	string fileName,newFileName;
         	fileName = extractFileName(str);
         	newFileName = extractContents(str);
-        	disk.rename(fileName,newFileName);
+        	if(fileName.length()<=0 || newFileName.length()<=0)
+        	{
+        		cout<<"\nInvalid input\n\n";
+        		continue;
+			}
+        	disk.rf(fileName,newFileName);
 		}
 		else if(command == "pf")
         {
         	string fileName;
         	fileName = extractFileName(str);
-        	disk.read(fileName);
+        	if(fileName.length() <= 0)
+        	{
+        		cout<<"\nInvalid input\n\n";
+        		continue;
+			}
+        	disk.pf(fileName);
 		}
-		else if(command == "ls")
+		else if(str == "ls")
         {
-        	disk.list();
+        	disk.ls();
+		}
+		else if(str =="0")
+		{
+			exit(0);
+		}
+		else
+		{
+			cout<<"\n\nWrong Command\n\n";
+			continue;
 		}
 		
-        
-        cout<<"enter choice: ";
-    	cin>>choice;
-        if(choice >=9)continue;
-        
-        
-        
-        
-        
-        
-        
-        
-        
-       /* 
-        switch(choice){
-            case 1:
-            	
-                disk.create(file_name, contents);
-                break;
-
-            case 2:
-                cout << "Enter the file name: ";
-                cin >> file_name;
-                disk.Delete(file_name);
-                break;
-            
-            case 3:
-                cout << "Enter the file name: ";
-                cin >> file_name;
-                cout << "Enter block number to read: ";
-                cin >> blockNum;
-                disk.read(file_name, blockNum, buffer);
-                cout << "Contents of the file are: " << buffer << endl;
-                break;
-
-            case 4:
-                cout << "Enter the file name: ";
-                cin >> file_name;
-                cout << "Enter block number to write: ";
-                cin >> blockNum;
-                cout << "Enter the data to be written: ";
-                cin.ignore(256, '\n');
-                cin.getline(buffer, 1024);
-                disk.write(file_name, blockNum, buffer);
-                break;
-
-            case 5:
-                disk.ls();
-                break;
-            
-            case 9: break;
-
-            default:
-                cout << "Invalid choice!" << endl;
-                break;
-        }
-
-        cout << endl;*/
     }
 
     return 0;
