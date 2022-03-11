@@ -28,6 +28,19 @@ void readInput()
     }
 
     // Reading input...
+
+
+int main() 
+{
+	
+	int n1,n2, n3,noOfReq;
+	cout<<"Enter number of Single Occupancy rooms : ";
+	cin>>n1;
+	cout<<"Enter number of Double Occupancy rooms : ";
+	cin>>n2;
+	cout<<"Enter number of Triple Occupancy rooms : ";
+	cin>>n3;
+	
 	
 	
     infile>>n1;
