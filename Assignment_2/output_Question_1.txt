@@ -1,0 +1,15 @@
+Manager Name 		 Revenue Generated (Rs)		Money Wasted because of Nature of Manager (Rs) 		No. of Request rejected because of wrong allotment of rooms
+
+
+Aman				22500				0						0
+Raj				22500				0						0
+Alok				22500				0						0
+
+Aman is best manager
+
+
+Alok is best manager
+
+
+Raj is best manager
+

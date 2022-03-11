@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 	//writing output on file
 	ofstream outfile;
 	string fileName;
-	outfile.open("output.txt");
+	outfile.open("output_Question_1.txt");
 	outfile<<"Manager Name \t\t Revenue Generated (Rs)\t\tMoney Wasted because of Nature of Manager (Rs) \t\tNo. of Request rejected because of wrong allotment of rooms\n\n";
 	for(int i = 0; i < 3; i++)
     {
