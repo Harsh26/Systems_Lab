@@ -564,9 +564,9 @@ void Process()
     cout<<"\nNumber of times Librarian has to search entire Library depo: "<<num_miss_btech+num_miss_mtech+num_miss_phd<<endl;
     MyFile << "\nNumber of times Librarian has to search entire Library depo: "<<num_miss_btech+num_miss_mtech+num_miss_phd<<endl;
     
-    //cout<<"\nNum miss btech="<<num_miss_btech;
-    //cout<<"\nNum miss mtech="<<num_miss_mtech;
-    //cout<<"\nNum miss phd="<<num_miss_phd;
+    cout<<"\nNum miss btech="<<num_miss_btech;
+    cout<<"\nNum miss mtech="<<num_miss_mtech;
+    cout<<"\nNum miss phd="<<num_miss_phd;
 
     cout<<"\n\n";
     MyFile << "\n\n";
@@ -618,7 +618,7 @@ int main()
 {
     readInput();
 
-    validateInput();
+    //validateInput();
 
     Process();
 

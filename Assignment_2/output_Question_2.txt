@@ -1,43 +1,19 @@
 
-Number of times Librarian has to search entire Library depo: 19
+Number of times Librarian has to search entire Library depo: 9
 
 
 
-Subject id for which max no. of book issued B.tech: B2 
-Subject id for which max no. of book issued M.tech: M5 M1 
-Subject id for which max no. of book issued P.hd: P2 
-
-
-Book-ID, Subject-ID at end of simulation for B.tech: 
-	  --------
-	0 |  B1  | Book id: 2
-	  --------
-	1 |  B5  | Book id: 3
-	  --------
-	2 |  B3  | Book id: 3
-
+Subject id for which max no. of book issued B.tech: 
+Subject id for which max no. of book issued M.tech: M2 M0 
+Subject id for which max no. of book issued P.hd: 
 
 
 Book-ID, Subject-ID at end of simulation for M.tech: 
 	  --------
-	0 |  M2  | Book id: 3
+	0 |  M1  | Book id: 3
 	  --------
-	1 |  M4  | Book id: 3
+	1 |  M2  | Book id: 5
 	  --------
-	2 |  M1  | Book id: 4
-	  --------
-	3 |  M5  | Book id: 4
-
-
-
-Book-ID, Subject-ID at end of simulation for P.hd: 
-	  --------
-	0 |  P1  | Book id: 3
-	  --------
-	1 |  P5  | Book id: 3
-	  --------
-	2 |  P4  | Book id: 2
-	  --------
-	3 |  P2  | Book id: 5
+	2 |  M0  | Book id: 5
 
 
