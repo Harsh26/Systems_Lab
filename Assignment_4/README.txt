@@ -20,4 +20,4 @@
 															> ./client <ip_address> <port_no>
 															
 																  
-					5. Each Trader has a login ID and password. Login using TraderID and Password that is present in 'login.txt' file zipped                                             in submission. Once login is successful, Follow instructions on screen to trade. 
+					5. Each Trader has a login ID and password. Login using TraderID and Password that is present in 'login.txt' file zipped  in submission. Once login is successful, Follow instructions on screen to trade. 
