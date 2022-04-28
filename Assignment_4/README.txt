@@ -1,8 +1,8 @@
-**************************************************						HOW TO RUN THE  TRADING SYSTEM					*********************************************************************
+					HOW TO RUN THE  TRADING SYSTEM				
 					
 		For running the trading system, you need to follow following Steps:-
 		
-					1. Make sure all the files zipped in the submission [server.c, client.c, login.txt] are in same folder. If there is any file missing, the program might not run.
+					1. Make sure all the files zipped in the submission [server.c, client.c, login.txt] are in same folder. If there is any 						file missing, the program might not run.
 					
 					2. Open terminal in the same directory, or traverse via 'cd' command to the directory where files are present.
 					
@@ -19,4 +19,4 @@
 															> ./client <ip_address> <port_no>
 															
 																  
-					5. Each Trader has a login ID and password. Login using TraderID and Password that is present in 'login.txt' file zipped in submission. Once login is successful, Follow instructions on screen to trade. 
+					5. Each Trader has a login ID and password. Login using TraderID and Password that is present in 'login.txt' file zipped 						in submission. Once login is successful, Follow instructions on screen to trade. 
